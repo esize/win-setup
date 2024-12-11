@@ -16,9 +16,6 @@
     "enableNumLockOnStart": true
   },
   "visual": {
-    "theme": "Glow",
-    "accentColor": "#A94DC1",
-    "cursorScheme": "Windows Black",
     "transparency": true,
     "snapWindow": true,
     "snapAssistFlyout": true,
