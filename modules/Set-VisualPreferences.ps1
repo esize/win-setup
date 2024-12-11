@@ -28,28 +28,29 @@ function Set-VisualPreferences {
     # Allow themes to change desktop icons
     Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes" -Name "ThemeChangesDesktopIcons" -Value 1 -Type DWord
 
-    # Install and apply theme pack
+    # Apply theme settings directly through registry
     $themePath = "$scriptPath\theme.deskthemepack"
     if (Test-Path $themePath) {
         try {
-            # Install theme by double-clicking (invoking) the theme pack
-            Invoke-Item $themePath
+            # Apply theme settings directly
+            $themeContent = Get-Content $themePath -Raw
+            $themeRegistry = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes"
+            $currentThemePath = Join-Path $env:LOCALAPPDATA "Microsoft\Windows\Themes\Custom.theme"
             
-            # Wait a moment for the theme to install
-            Start-Sleep -Seconds 2
-            
-            # Get the installed theme path (usually in AppData)
-            $installedThemePath = Get-ChildItem "$env:LocalAppData\Microsoft\Windows\Themes" |
-                                Where-Object { $_.Name -like "*.theme" } |
-                                Sort-Object LastWriteTime -Descending |
-                                Select-Object -First 1 -ExpandProperty FullName
-            
-            if ($installedThemePath) {
-                # Apply the theme
-                Start-Process rundll32.exe -ArgumentList "shell32.dll,Control_RunDLL desk.cpl,,2" -Wait
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes" -Name "CurrentTheme" -Value $themePath
-                $themeFound = $true
+            # Create theme directory if it doesn't exist
+            $themeDir = Split-Path $currentThemePath -Parent
+            if (-not (Test-Path $themeDir)) {
+                New-Item -ItemType Directory -Path $themeDir -Force | Out-Null
             }
+            
+            # Save and apply theme
+            $themeContent | Set-Content $currentThemePath -Force
+            Set-ItemProperty -Path $themeRegistry -Name "CurrentTheme" -Value $currentThemePath
+            
+            # Force theme refresh
+            rundll32.exe uxtheme.dll,SetSystemVisualStyle $currentThemePath $currentThemePath $currentThemePath 1
+            
+            $themeFound = $true
         }
         catch {
             Write-Log "Failed to apply theme: $_" -Level Warning
@@ -57,7 +58,7 @@ function Set-VisualPreferences {
         }
         
         if (-not $themeFound) {
-            Write-Log "Glow theme file not found - falling back to default theme" -Level Warning
+            Write-Log "Theme application failed - falling back to default theme" -Level Warning
         }
     } else {
         Write-Log "Theme pack file not found at: $themePath" -Level Warning
