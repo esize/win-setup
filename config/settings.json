@@ -1,49 +1,63 @@
 {
-    "system": {
-        "darkMode": true,
-        "showFileExtensions": true,
-        "showHiddenFiles": true,
-        "disableCortana": true
+  "system": {
+    "darkMode": true,
+    "showFileExtensions": true,
+    "showHiddenFiles": true,
+    "disableCortana": true,
+    "disableConsumerFeatures": true,
+    "disableActivityHistory": true,
+    "disableGameDVR": true,
+    "disableHibernation": true,
+    "disableHomegroup": true,
+    "disableWifiSense": true,
+    "disableAdobeTelemetry": true,
+    "disableCopilot": true,
+    "setUTCTime": true,
+    "enableNumLockOnStart": true
+  },
+  "visual": {
+    "theme": "Glow",
+    "accentColor": "#A94DC1",
+    "cursorScheme": "Windows Black",
+    "transparency": true,
+    "snapWindow": true,
+    "snapAssistFlyout": true,
+    "snapAssistSuggestions": true,
+    "mouseAcceleration": false
+  },
+  "shell": {
+    "showTaskViewButton": false,
+    "showWidgetsButton": false,
+    "centerTaskbarIcons": true,
+    "taskbarItems": {
+      "search": "icon",
+      "taskView": false,
+      "widgets": false
     },
-    "visual": {
-        "theme": "Glow",
-        "accentColor": "#A94DC1",
-        "cursorScheme": "Windows Black",
-        "transparency": true
+    "systemTrayIcons": {
+      "penMenu": false,
+      "touchKeyboard": "whenNoKeyboard",
+      "virtualTouchpad": false
     },
-    "shell": {
-        "showTaskViewButton": false,
-        "showWidgetsButton": false,
-        "centerTaskbarIcons": true,
-        "taskbarItems": {
-            "search": "icon",
-            "taskView": false,
-            "widgets": false
-        },
-        "systemTrayIcons": {
-            "penMenu": false,
-            "touchKeyboard": "whenNoKeyboard",
-            "virtualTouchpad": false
-        },
-        "taskbarBehavior": {
-            "alignment": "center",
-            "autoHide": false,
-            "showBadges": false,
-            "showFlashing": false,
-            "showOnAllDisplays": true,
-            "multiDisplayApps": "allTaskbars",
-            "allowWindowSharing": true,
-            "showDesktopCorner": true,
-            "combineButtons": "always",
-            "combineButtonsOtherTaskbars": "always"
-        }
-    },
-    "developer": {
-        "developerMode": true,
-        "devicePortal": false,
-        "deviceDiscovery": false,
-        "enableEndTask": true,
-        "remoteDesktop": false,
-        "defaultTerminal": "Windows Terminal"
+    "taskbarBehavior": {
+      "alignment": "center",
+      "autoHide": false,
+      "showBadges": false,
+      "showFlashing": false,
+      "showOnAllDisplays": true,
+      "multiDisplayApps": "allTaskbars",
+      "allowWindowSharing": true,
+      "showDesktopCorner": true,
+      "combineButtons": "always",
+      "combineButtonsOtherTaskbars": "always"
     }
-} 
+  },
+  "developer": {
+    "developerMode": true,
+    "devicePortal": false,
+    "deviceDiscovery": false,
+    "enableEndTask": true,
+    "remoteDesktop": false,
+    "defaultTerminal": "Windows Terminal"
+  }
+}

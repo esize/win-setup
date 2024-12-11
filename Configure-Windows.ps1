@@ -17,6 +17,7 @@ Set-Location $scriptPath
 . "$scriptPath\modules\Set-ShellPreferences.ps1"
 . "$scriptPath\modules\Install-WSL.ps1"
 . "$scriptPath\modules\Set-StartMenuPreferences.ps1"
+. "$scriptPath\modules\Set-SystemTweaks.ps1"
 
 # Start configuration
 Write-Log "Starting Windows 11 configuration..."
@@ -50,6 +51,10 @@ try {
     # Configure Start Menu preferences
     Write-Log "Configuring Start Menu preferences..."
     Set-StartMenuPreferences
+
+    # Configure system tweaks
+    Write-Log "Configuring system tweaks..."
+    Set-SystemTweaks
 
     Write-Log "Configuration completed successfully!"
 }
