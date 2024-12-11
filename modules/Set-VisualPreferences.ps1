@@ -34,12 +34,41 @@ function Set-VisualPreferences {
             Set-ItemProperty -Path $themeRegPath -Name "ThemeChangesDesktopBackgroundColor" -Value 1
 
             # Refresh the theme
-            $signature = @'
-[DllImport("uxtheme.dll", CharSet = CharSet.Unicode)]
+            try {
+                # Try to refresh the theme using alternative method
+                $signature = @'
+[DllImport("UXTheme.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 public static extern int RefreshImmersiveColorPolicyState();
 '@
-            $uxtheme = Add-Type -MemberDefinition $signature -Name UXTheme -Namespace Win32Functions -PassThru
-            $uxtheme::RefreshImmersiveColorPolicyState()
+
+                if (-not ("Win32Functions.UXTheme" -as [type])) {
+                    Add-Type -MemberDefinition $signature -Name UXTheme -Namespace Win32Functions -ErrorAction SilentlyContinue
+                }
+
+                # Attempt to refresh theme, but don't throw if it fails
+                try {
+                    [Win32Functions.UXTheme]::RefreshImmersiveColorPolicyState()
+                }
+                catch {
+                    Write-Log "Could not refresh theme using UXTheme.dll - this is not critical" -Level Warning
+                }
+
+                # Broadcast system-wide theme change message
+                $CSharpSig = @'
+[DllImport("user32.dll", SetLastError=true, CharSet=CharSet.Auto)]
+public static extern IntPtr SendMessageTimeout(IntPtr hWnd, uint Msg, UIntPtr wParam, string lParam, uint fuFlags, uint uTimeout, out UIntPtr lpdwResult);
+'@
+
+                if (-not ("Win32Functions.User32" -as [type])) {
+                    Add-Type -MemberDefinition $CSharpSig -Name User32 -Namespace Win32Functions -ErrorAction SilentlyContinue
+                }
+
+                # Notify all windows of theme change
+                [Win32Functions.User32]::SendMessageTimeout(0xFFFF, 0x001A, [UIntPtr]::Zero, "ImmersiveColorSet", 2, 5000, [ref][UIntPtr]::Zero) | Out-Null
+            }
+            catch {
+                Write-Log "Non-critical error while refreshing theme: $_" -Level Warning
+            }
         }
         catch {
             Write-Log "Failed to apply theme: $_" -Level Error
