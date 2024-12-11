@@ -83,13 +83,7 @@ function Set-ShellPreferences {
     Set-RegistryProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarGlomLevel" -Value $combineValue
 
     # Restart Explorer to apply changes
-    try {
-        Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
-        Start-Process explorer
-    }
-    catch {
-        Write-Log "Failed to restart Explorer: $_" -Level Warning
-    }
+    Restart-Explorer
 } 
 
 function Set-TaskbarPinnedApps {
@@ -169,7 +163,5 @@ function Set-TaskbarPinnedApps {
     }
 
     # Restart Explorer to apply changes
-    Write-Log "Restarting Explorer to apply changes..."
-    Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
-    Start-Process explorer
+    Restart-Explorer
 }

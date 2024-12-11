@@ -9,6 +9,7 @@ Set-Location $scriptPath
 # Import utility functions
 . "$scriptPath\utils\Write-Log.ps1"
 . "$scriptPath\utils\Check-AdminRights.ps1"
+. "$scriptPath\utils\Restart-Explorer.ps1"
 
 # Import configuration modules
 . "$scriptPath\modules\Set-SystemPreferences.ps1"
