@@ -4,6 +4,30 @@ function Set-VisualPreferences {
 
     $settings = Get-Content "$scriptPath\config\settings.json" | ConvertFrom-Json
 
+    # Configure desktop icons
+    $desktopIconsPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel"
+    if (-not (Test-Path $desktopIconsPath)) {
+        New-Item -Path $desktopIconsPath -Force | Out-Null
+    }
+
+    # Desktop icon CLSIDs
+    $desktopIcons = @{
+        "ThisPC" = "{20D04FE0-3AEA-1069-A2D8-08002B30309D}"
+        "UserFiles" = "{59031A47-3F72-44A7-89C5-5595FE6B30EE}"
+        "Network" = "{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}"
+        "RecycleBin" = "{645FF040-5081-101B-9F08-00AA002F954E}"
+        "ControlPanel" = "{5399E694-6CE5-4D6C-8FCE-1D8870FDCBA0}"
+    }
+
+    # Show only Recycle Bin by default
+    foreach ($icon in $desktopIcons.GetEnumerator()) {
+        $value = if ($icon.Key -eq "RecycleBin") { 0 } else { 1 }
+        Set-ItemProperty -Path $desktopIconsPath -Name $icon.Value -Value $value -Type DWord
+    }
+
+    # Allow themes to change desktop icons
+    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes" -Name "ThemeChangesDesktopIcons" -Value 1 -Type DWord
+
     # Install and apply theme pack
     $themePath = "$scriptPath\theme.deskthemepack"
     if (Test-Path $themePath) {
