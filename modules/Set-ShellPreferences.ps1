@@ -90,8 +90,6 @@ function Set-TaskbarPinnedApps {
     [CmdletBinding()]
     param()
 
-    Write-Log "Configuring taskbar pinned applications..."
-
     # Install required applications first
     Write-Log "Installing Google Chrome..."
     winget install --id Google.Chrome --source winget --accept-source-agreements --accept-package-agreements --silent

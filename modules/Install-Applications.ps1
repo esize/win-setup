@@ -1,43 +1,33 @@
-function Install-PowerShell7 {
+function Install-Applications {
     [CmdletBinding()]
     param()
 
-    Write-Log "Checking PowerShell version..."
-    
-    # Check if PowerShell 7 is already installed
-    $pwsh = Get-Command pwsh -ErrorAction SilentlyContinue
-    
-    if (-not $pwsh) {
-        Write-Log "PowerShell 7 not found. Installing..."
+    $appsConfig = Get-Content "$scriptPath\config\apps.json" | ConvertFrom-Json
+    $totalApps = $appsConfig.winget.Count
+    $currentApp = 0
+
+    foreach ($app in $appsConfig.winget) {
+        $currentApp++
+        $progressPercentage = [math]::Round(($currentApp / $totalApps) * 100)
+        
+        # Clear the previous line
+        Write-Host "`r" -NoNewline
+        
+        # Create progress bar
+        $progressBar = "[" + ("=" * [math]::Floor($progressPercentage / 2)) + (" " * (50 - [math]::Floor($progressPercentage / 2))) + "]"
+        
+        # Display current progress
+        Write-Host "`rInstalling $($app.name) $progressBar [$currentApp/$totalApps]" -NoNewline
+        
         try {
-            # Install PowerShell 7 using winget
-            winget install --id Microsoft.PowerShell --source winget --accept-source-agreements --accept-package-agreements
-            
-            # Refresh environment variables
-            $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
-            
-            Write-Log "PowerShell 7 installed successfully!"
+            # Redirect winget output to null to keep display clean
+            winget install -e --id $app.id --accept-source-agreements --accept-package-agreements -h | Out-Null
         }
         catch {
-            Write-Log "Failed to install PowerShell 7: $_" -Level Error
-            throw
+            Write-Log "Failed to install $($app.name): $_" -Level Warning
         }
     }
-    else {
-        Write-Log "PowerShell 7 is already installed."
-    }
-
-    # Get the current PowerShell version
-    $currentVersion = $PSVersionTable.PSVersion.Major
     
-    # If not running in PowerShell 7, restart the script in PowerShell 7
-    if ($currentVersion -lt 7) {
-        Write-Log "Restarting script in PowerShell 7..."
-        $scriptPath = $MyInvocation.MyCommand.Path
-        $arguments = $MyInvocation.BoundParameters.GetEnumerator() | ForEach-Object { "-$($_.Key) `"$($_.Value)`"" }
-        
-        # Start the script in PowerShell 7
-        Start-Process pwsh -ArgumentList "-NoExit -File `"$scriptPath`" $arguments" -Wait
-        exit
-    }
+    # Add a newline at the end
+    Write-Host "`nAll applications installed!"
 } 
