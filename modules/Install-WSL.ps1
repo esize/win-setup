@@ -32,7 +32,7 @@ function Install-WSL {
 
         # Install Ubuntu using winget (completely non-interactive)
         Write-Log "Installing Ubuntu..."
-        winget install -e --id Canonical.Ubuntu.2404 --accept-source-agreements --accept-package-agreements --silent
+        Install-Application -appId Canonical.Ubuntu.2404
 
         # Wait for Ubuntu installation to complete
         Start-Sleep -Seconds 10

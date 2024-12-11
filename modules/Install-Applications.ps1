@@ -1,3 +1,19 @@
+function Install-Application {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$appId
+    )
+
+    try {
+        # Redirect winget output to null to keep display clean
+        winget install -e --id $appId --accept-source-agreements --accept-package-agreements -h | Out-Null
+    }
+    catch {
+        Write-Log "Failed to install $($app.name): $_" -Level Warning
+    }
+}
+
 function Install-Applications {
     [CmdletBinding()]
     param()
@@ -19,13 +35,7 @@ function Install-Applications {
         # Display current progress
         Write-Host "`rInstalling $($app.name) $progressBar [$currentApp/$totalApps]" -NoNewline
         
-        try {
-            # Redirect winget output to null to keep display clean
-            winget install -e --id $app.id --accept-source-agreements --accept-package-agreements -h | Out-Null
-        }
-        catch {
-            Write-Log "Failed to install $($app.name): $_" -Level Warning
-        }
+        Install-Application -appId $app.id
     }
     
     # Add a newline at the end

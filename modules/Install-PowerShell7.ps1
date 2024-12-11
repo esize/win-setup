@@ -11,7 +11,7 @@ function Install-PowerShell7 {
         Write-Log "PowerShell 7 not found. Installing..."
         try {
             # Install PowerShell 7 using winget
-            winget install --id Microsoft.PowerShell --source winget --accept-source-agreements --accept-package-agreements
+            Install-Application -appId Microsoft.PowerShell
             
             # Refresh environment variables
             $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
