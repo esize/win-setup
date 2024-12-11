@@ -13,7 +13,8 @@
     "disableAdobeTelemetry": true,
     "disableCopilot": true,
     "setUTCTime": true,
-    "enableNumLockOnStart": true
+    "enableNumLockOnStart": true,
+    "disableBingSearch": true
   },
   "visual": {
     "transparency": true,

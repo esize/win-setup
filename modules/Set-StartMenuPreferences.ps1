@@ -2,6 +2,8 @@ function Set-StartMenuPreferences {
     [CmdletBinding()]
     param()
 
+    $settings = Get-Content "$scriptPath\config\settings.json" | ConvertFrom-Json
+
     Write-Log "Configuring Start Menu preferences..."
 
     # Show recently added apps
@@ -18,4 +20,11 @@ function Set-StartMenuPreferences {
 
     # Disable account notifications
     Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Start_AccountNotifications" -Value 0
+
+    # Disable Bing search in Start menu
+    if ($settings.system.disableBingSearch) {
+        Write-Log "Disabling Bing search in Start menu..."
+        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "BingSearchEnabled" -Value 0
+        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "CortanaConsent" -Value 0
+    }
 } 

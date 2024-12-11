@@ -11,13 +11,15 @@ Set-Location $scriptPath
 . "$scriptPath\utils\Check-AdminRights.ps1"
 
 # Import configuration modules
-. "$scriptPath\modules\Install-Applications.ps1"
 . "$scriptPath\modules\Set-SystemPreferences.ps1"
 . "$scriptPath\modules\Set-VisualPreferences.ps1"
 . "$scriptPath\modules\Set-ShellPreferences.ps1"
 . "$scriptPath\modules\Install-WSL.ps1"
 . "$scriptPath\modules\Set-StartMenuPreferences.ps1"
 . "$scriptPath\modules\Set-SystemTweaks.ps1"
+. "$scriptPath\modules\Install-PowerShell7.ps1"
+
+. "$scriptPath\modules\Install-Applications.ps1"
 
 # Start configuration
 Write-Log "Starting Windows 11 configuration..."
@@ -51,10 +53,16 @@ try {
     # Configure system tweaks
     Write-Log "Configuring system tweaks..."
     Set-SystemTweaks
+    
+    
+    # Ensure PowerShell 7
+    Write-Log "Ensuring PowerShell 7..."
+    Install-PowerShell7
 
     # Install applications
     Write-Log "Installing applications..."
     Install-Applications
+
 
     Write-Log "Configuration completed successfully!"
 }
