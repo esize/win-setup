@@ -16,6 +16,10 @@ function Set-SystemPreferences {
 
     # Disable Cortana
     if ($settings.system.disableCortana) {
-        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Name "AllowCortana" -Value 0
+        $cortanaPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search"
+        if (-not (Test-Path $cortanaPath)) {
+            New-Item -Path $cortanaPath -Force | Out-Null
+        }
+        Set-ItemProperty -Path $cortanaPath -Name "AllowCortana" -Value 0
     }
 } 

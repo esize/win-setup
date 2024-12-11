@@ -6,14 +6,24 @@ function Set-VisualPreferences {
 
     # Apply Windows theme
     if ($settings.visual.theme -eq "Glow") {
-        # Path to the Glow theme file
-        $themePath = "$env:SystemRoot\Resources\Themes\Glow.theme"
-        if (Test-Path $themePath) {
-            Start-Process rundll32.exe -ArgumentList "shell32.dll,Control_RunDLL desk.cpl,,2" -Wait
-            Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes" -Name "CurrentTheme" -Value $themePath
+        # Check both possible theme locations
+        $themePaths = @(
+            "$env:SystemRoot\Resources\Themes\Glow.theme",
+            "$env:LocalAppData\Microsoft\Windows\Themes\Glow.theme"
+        )
+        
+        $themeFound = $false
+        foreach ($themePath in $themePaths) {
+            if (Test-Path $themePath) {
+                Start-Process rundll32.exe -ArgumentList "shell32.dll,Control_RunDLL desk.cpl,,2" -Wait
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes" -Name "CurrentTheme" -Value $themePath
+                $themeFound = $true
+                break
+            }
         }
-        else {
-            Write-Log "Glow theme file not found" -Level Warning
+        
+        if (-not $themeFound) {
+            Write-Log "Glow theme file not found - falling back to default theme" -Level Warning
         }
     }
 
