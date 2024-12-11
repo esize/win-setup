@@ -25,8 +25,11 @@ function Set-VisualPreferences {
                 Start-Process rundll32.exe -ArgumentList "shell32.dll,Control_RunDLL desk.cpl,,2" -Wait
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes" -Name "CurrentTheme" -Value $themePath
                 $themeFound = $true
-                break
             }
+        }
+        catch {
+            Write-Log "Failed to apply theme: $_" -Level Warning
+            $themeFound = $false
         }
         
         if (-not $themeFound) {
