@@ -56,7 +56,15 @@ function Set-SystemTweaks {
 
     # NumLock on Startup
     if ($settings.system.enableNumLockOnStart) {
+        # Set for Default User
         Set-ItemProperty -Path "HKU:\.DEFAULT\Control Panel\Keyboard" -Name "InitialKeyboardIndicators" -Value 2
+        # Set for Current User
+        Set-ItemProperty -Path "HKCU:\Control Panel\Keyboard" -Name "InitialKeyboardIndicators" -Value 2
+    } else {
+        # Set for Default User
+        Set-ItemProperty -Path "HKU:\.DEFAULT\Control Panel\Keyboard" -Name "InitialKeyboardIndicators" -Value 0
+        # Set for Current User
+        Set-ItemProperty -Path "HKCU:\Control Panel\Keyboard" -Name "InitialKeyboardIndicators" -Value 0
     }
 
     # Mouse Acceleration
