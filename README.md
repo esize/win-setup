@@ -21,5 +21,5 @@ Automated Windows 11 configuration script that sets up your development environm
 
 Run the following command in PowerShell (Admin): 
 ```PowerShell
-irm https://raw.githubusercontent.com/esize/win-setup/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/esize/win-setup/refs/heads/main/install.ps1 | iex
 ```
