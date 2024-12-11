@@ -37,7 +37,7 @@ function Remove-DefaultApps {
             Get-AppxProvisionedPackage -Online | Where-Object DisplayName -eq $app | Remove-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue
         }
         catch {
-            Write-Log "Failed to remove $app: $_" -Level Warning
+            Write-Log "Failed to remove $($app): $_" -Level Warning
         }
     }
 
