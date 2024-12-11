@@ -7,11 +7,11 @@ function Install-WSL {
     try {
         # Enable Windows Subsystem for Linux
         Write-Log "Enabling Windows Subsystem for Linux feature..."
-        dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+        Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -All -NoRestart
 
         # Enable Virtual Machine Platform
         Write-Log "Enabling Virtual Machine Platform feature..."
-        dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+        Enable-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform -All -NoRestart
 
         # Download and install WSL2 kernel update
         Write-Log "Downloading WSL2 kernel update..."
@@ -26,9 +26,13 @@ function Install-WSL {
         Write-Log "Setting WSL2 as default version..."
         wsl --set-default-version 2
 
-        # Install Ubuntu 24.04
+        # Install Ubuntu using winget (non-interactive)
         Write-Log "Installing Ubuntu 24.04..."
-        winget install -e --id Canonical.Ubuntu.2204 --accept-source-agreements --accept-package-agreements
+        $process = Start-Process winget -ArgumentList "install -e --id Canonical.Ubuntu.2204 --accept-source-agreements --accept-package-agreements --silent" -Wait -PassThru
+
+        if ($process.ExitCode -ne 0) {
+            throw "Failed to install Ubuntu via winget. Exit code: $($process.ExitCode)"
+        }
 
         Write-Log "WSL2 and Ubuntu installation completed successfully!"
         Write-Log "Note: A system restart may be required to complete the installation." -Level Warning
