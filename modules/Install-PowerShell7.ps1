@@ -30,7 +30,7 @@ function Install-PowerShell7 {
     # Get the current PowerShell version
     $currentVersion = $PSVersionTable.PSVersion.Major
     
-    # If not running in PowerShell 7, restart the script in PowerShell 7
+    # Only restart in PowerShell 7 if we're running in an older version
     if ($currentVersion -lt 7) {
         Write-Log "Restarting script in PowerShell 7..."
         
@@ -46,5 +46,8 @@ function Install-PowerShell7 {
         
         # Exit the current PowerShell session
         exit $process.ExitCode
+    }
+    else {
+        Write-Log "Already running in PowerShell 7, continuing..."
     }
 } 
