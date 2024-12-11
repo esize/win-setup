@@ -22,6 +22,10 @@ function Install-WSL {
         Write-Log "Installing WSL2 kernel update..."
         Start-Process msiexec.exe -ArgumentList "/i `"$wslUpdateFile`" /quiet /norestart" -Wait -NoNewWindow
 
+        # Install WSL using wsl --install command
+        Write-Log "Installing WSL..."
+        wsl --install --no-distribution --no-launch
+
         # Set WSL2 as default
         Write-Log "Setting WSL2 as default version..."
         wsl --set-default-version 2
@@ -30,11 +34,12 @@ function Install-WSL {
         Write-Log "Installing Ubuntu..."
         winget install -e --id Canonical.Ubuntu.2404 --accept-source-agreements --accept-package-agreements --silent
 
-        # Initialize Ubuntu (non-interactive)
-        $ubuntuExe = "${env:LOCALAPPDATA}\Microsoft\WindowsApps\ubuntu2404.exe"
-        if (Test-Path $ubuntuExe) {
-            Start-Process $ubuntuExe -ArgumentList "install --root" -Wait -NoNewWindow
-        }
+        # Wait for Ubuntu installation to complete
+        Start-Sleep -Seconds 10
+
+        # Initialize Ubuntu distribution
+        Write-Log "Initializing Ubuntu distribution..."
+        wsl --install -d Ubuntu-24.04 --no-launch
 
         Write-Log "WSL2 and Ubuntu installation completed successfully!"
     }
