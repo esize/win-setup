@@ -18,6 +18,7 @@ Set-Location $scriptPath
 . "$scriptPath\modules\Set-StartMenuPreferences.ps1"
 . "$scriptPath\modules\Set-SystemTweaks.ps1"
 . "$scriptPath\modules\Install-PowerShell7.ps1"
+. "$scriptPath\modules\Remove-DefaultApps.ps1"
 
 . "$scriptPath\modules\Install-Applications.ps1"
 
@@ -54,10 +55,13 @@ try {
     Write-Log "Configuring system tweaks..."
     Set-SystemTweaks
     
-    
     # Ensure PowerShell 7
     Write-Log "Ensuring PowerShell 7..."
     Install-PowerShell7
+
+    # Remove default apps
+    Write-Log "Removing default Windows applications..."
+    Remove-DefaultApps
 
     # Install applications
     Write-Log "Installing applications..."
