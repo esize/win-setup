@@ -21,6 +21,7 @@ Set-Location $scriptPath
 . "$scriptPath\modules\Remove-DefaultApps.ps1"
 
 . "$scriptPath\modules\Install-Applications.ps1"
+. "$scriptPath\modules\Install-Fonts.ps1"
 
 # Start configuration
 Write-Log "Starting Windows 11 configuration..."
@@ -71,6 +72,9 @@ try {
     Write-Log "Installing applications..."
     Install-Applications
 
+    # Install GeistMono Nerd Font
+    Write-Log "Installing GeistMono Nerd Font..."
+    Install-GeistMonoFont
 
     Write-Log "Configuration completed successfully!"
 }
