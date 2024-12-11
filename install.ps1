@@ -33,5 +33,6 @@ Set-Location $extractedDir.FullName
 .\Configure-Windows.ps1
 
 # Cleanup
+Start-Sleep -Seconds 2  # Give processes time to release handles
 Set-Location $env:USERPROFILE
-Remove-Item -Path $setupDir -Recurse -Force 
+Remove-Item -Path $setupDir -Recurse -Force -ErrorAction SilentlyContinue

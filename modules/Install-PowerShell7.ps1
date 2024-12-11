@@ -33,11 +33,18 @@ function Install-PowerShell7 {
     # If not running in PowerShell 7, restart the script in PowerShell 7
     if ($currentVersion -lt 7) {
         Write-Log "Restarting script in PowerShell 7..."
+        
+        # Save current script path and arguments
         $scriptPath = $MyInvocation.MyCommand.Path
         $arguments = $MyInvocation.BoundParameters.GetEnumerator() | ForEach-Object { "-$($_.Key) `"$($_.Value)`"" }
         
-        # Start the script in PowerShell 7
-        Start-Process pwsh -ArgumentList "-NoExit -File `"$scriptPath`" $arguments" -Wait
-        exit
+        # Change directory to avoid file lock issues
+        Set-Location $env:USERPROFILE
+        
+        # Start PowerShell 7 with the script
+        $process = Start-Process pwsh -ArgumentList "-NoExit -File `"$scriptPath`" $arguments" -PassThru -Wait
+        
+        # Exit the current PowerShell session
+        exit $process.ExitCode
     }
 } 
