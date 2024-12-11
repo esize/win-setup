@@ -45,21 +45,51 @@ function Set-ShellPreferences {
         try {
             Write-Log "Disabling Taskbar Widgets..."
             
-            # Create the registry path if it doesn't exist
-            $registryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
-            
-            # Try the primary method first
-            try {
-                Set-ItemProperty -Path $registryPath -Name "TaskbarDa" -Value 0 -ErrorAction Stop
-            }
-            catch {
-                # Fallback method using reg.exe
-                Write-Log "Attempting alternative method to disable widgets..." -Level Warning
-                $result = Start-Process "reg.exe" -ArgumentList "add `"HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced`" /v TaskbarDa /t REG_DWORD /d 0 /f" -Wait -PassThru -WindowStyle Hidden
-                
-                if ($result.ExitCode -ne 0) {
-                    Write-Log "Failed to disable widgets using alternative method" -Level Warning
+            # Array of registry paths and values to disable widgets
+            $widgetSettings = @(
+                @{
+                    Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+                    Name = "TaskbarDa"
+                    Value = 0
+                },
+                @{
+                    Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+                    Name = "ShowTaskViewButton"
+                    Value = 0
+                },
+                @{
+                    Path = "HKLM:\SOFTWARE\Policies\Microsoft\Dsh"
+                    Name = "AllowNewsAndInterests"
+                    Value = 0
+                },
+                @{
+                    Path = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds"
+                    Name = "EnableFeeds"
+                    Value = 0
                 }
+            )
+
+            # Apply each registry setting
+            foreach ($setting in $widgetSettings) {
+                try {
+                    # Ensure registry path exists
+                    if (-not (Test-Path $setting.Path)) {
+                        New-Item -Path $setting.Path -Force | Out-Null
+                    }
+                    
+                    # Set registry value
+                    Set-ItemProperty -Path $setting.Path -Name $setting.Name -Value $setting.Value -Type DWord -ErrorAction Stop
+                }
+                catch {
+                    Write-Log "Failed to set registry value $($setting.Name) at $($setting.Path): $_" -Level Warning
+                }
+            }
+
+            # Additional direct registry modification using reg.exe as fallback
+            $result = Start-Process "reg.exe" -ArgumentList "add `"HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced`" /v TaskbarDa /t REG_DWORD /d 0 /f" -Wait -PassThru -WindowStyle Hidden
+            
+            if ($result.ExitCode -ne 0) {
+                Write-Log "Fallback method to disable widgets failed" -Level Warning
             }
         }
         catch {
