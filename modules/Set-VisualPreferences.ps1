@@ -19,25 +19,27 @@ function Set-VisualPreferences {
             $destinationPath = Join-Path $themesDirectory "CustomTheme.deskthemepack"
             Copy-Item -Path $themePath -Destination $destinationPath -Force
             
-            # Install theme by double-clicking (invoking) the theme pack
-            Invoke-Item $destinationPath
-            
-            # Wait a moment for the theme to install
-            Start-Sleep -Seconds 2
-            
-            # Get the installed theme path
-            $installedThemePath = Get-ChildItem $themesDirectory |
-                                Where-Object { $_.Name -like "*.theme" } |
-                                Sort-Object LastWriteTime -Descending |
-                                Select-Object -First 1 -ExpandProperty FullName
-            
-            if ($installedThemePath) {
-                # Apply the theme
-                Start-Process rundll32.exe -ArgumentList "shell32.dll,Control_RunDLL desk.cpl,,2" -Wait
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes" -Name "CurrentTheme" -Value $installedThemePath
-            } else {
-                Write-Log "Failed to find installed theme path" -Level Warning
-            }
+            # Apply theme directly through registry
+            $themeName = [System.IO.Path]::GetFileNameWithoutExtension($destinationPath)
+            $themeRegPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes"
+            $personalizedThemePath = Join-Path $themesDirectory "$themeName.theme"
+
+            # Copy theme files
+            Copy-Item -Path $themePath -Destination $destinationPath -Force
+
+            # Set theme registry keys
+            Set-ItemProperty -Path $themeRegPath -Name "CurrentTheme" -Value $personalizedThemePath
+            Set-ItemProperty -Path $themeRegPath -Name "ThemeChangesDesktopIcons" -Value 1
+            Set-ItemProperty -Path $themeRegPath -Name "ThemeChangesMousePointers" -Value 1
+            Set-ItemProperty -Path $themeRegPath -Name "ThemeChangesDesktopBackgroundColor" -Value 1
+
+            # Refresh the theme
+            $signature = @'
+[DllImport("uxtheme.dll", CharSet = CharSet.Unicode)]
+public static extern int RefreshImmersiveColorPolicyState();
+'@
+            $uxtheme = Add-Type -MemberDefinition $signature -Name UXTheme -Namespace Win32Functions -PassThru
+            $uxtheme::RefreshImmersiveColorPolicyState()
         }
         catch {
             Write-Log "Failed to apply theme: $_" -Level Error
