@@ -1,20 +1,156 @@
 {
   "winget": [
     {
-      "name": "Microsoft.VisualStudioCode",
-      "id": "Microsoft.VisualStudioCode"
+      "name": "Affinity Photo 2",
+      "id": "9P8DVF1XW02V"
+    },
+    {
+      "name": "Affinity Designer 2",
+      "id": "9N2D0P16C80H"
+    },
+    {
+      "name": "Affinity Publisher 2",
+      "id": "9NTV2DZ11KD9"
+    },
+    {
+      "name": "Arc Browser",
+      "id": "TheBrowserCompany.Arc"
     },
     {
       "name": "Google Chrome",
       "id": "Google.Chrome"
     },
     {
-      "name": "7-Zip",
-      "id": "7zip.7zip"
+      "name": "Mozilla Firefox",
+      "id": "Mozilla.Firefox"
+    },
+    {
+      "name": "Cursor",
+      "id": "Anysphere.Cursor"
+    },
+    {
+      "name": "Discord",
+      "id": "Discord.Discord"
+    },
+    {
+      "name": "GDLauncher",
+      "id": "GorillaDevs.GDLauncher"
+    },
+    {
+      "name": "Git",
+      "id": "Git.Git"
+    },
+    {
+      "name": "GitHub CLI",
+      "id": "GitHub.cli"
+    },
+    {
+      "name": "Neovim",
+      "id": "Neovim.Neovim"
+    },
+    {
+      "name": "JetBrains Toolbox",
+      "id": "JetBrains.Toolbox"
+    },
+    {
+      "name": "Oh My Posh",
+      "id": "JanDeDobbeleer.OhMyPosh"
+    },
+    {
+      "name": "Visual Studio Code",
+      "id": "Microsoft.VisualStudioCode"
+    },
+    {
+      "name": "Obsidian",
+      "id": "Obsidian.Obsidian"
+    },
+    {
+      "name": "Steam",
+      "id": "Valve.Steam"
+    },
+    {
+      "name": "PowerShell",
+      "id": "Microsoft.PowerShell"
+    },
+    {
+      "name": "PowerToys",
+      "id": "Microsoft.PowerToys"
+    },
+    {
+      "name": "Windows Terminal",
+      "id": "Microsoft.WindowsTerminal"
+    },
+    {
+      "name": "FFmpeg",
+      "id": "Gyan.FFmpeg"
+    },
+    {
+      "name": "OBS Studio",
+      "id": "OBSProject.OBSStudio"
+    },
+    {
+      "name": "Spotify",
+      "id": "Spotify.Spotify"
+    },
+    {
+      "name": "VLC",
+      "id": "VideoLAN.VLC"
+    },
+    {
+      "name": "yt-dlp",
+      "id": "yt-dlp.yt-dlp"
+    },
+    {
+      "name": "Ventoy",
+      "id": "Ventoy.Ventoy"
+    },
+    {
+      "name": "Bat",
+      "id": "sharkdp.bat"
+    },
+    {
+      "name": "Bitwarden",
+      "id": "Bitwarden.Bitwarden"
+    },
+    {
+      "name": "Bulk Rename Utility",
+      "id": "TGRMN.BulkRenameUtility"
+    },
+    {
+      "name": "Etcher",
+      "id": "Balena.Etcher"
+    },
+    {
+      "name": "QuickLook",
+      "id": "QL-Win.QuickLook"
+    },
+    {
+      "name": "Ripgrep",
+      "id": "BurntSushi.ripgrep.MSVC"
+    },
+    {
+      "name": "Tailscale",
+      "id": "tailscale.tailscale"
     },
     {
       "name": "Ubuntu 24.04",
       "id": "Canonical.Ubuntu.2404"
+    },
+    {
+      "name": "Zoxide",
+      "id": "ajeetdsouza.zoxide"
+    },
+    {
+      "name": "Insomnia",
+      "id": "Insonmia.Insomnia"
+    },
+    {
+      "name": "Logi Tune",
+      "id": "Logitech.LogiTune"
+    },
+    {
+      "name": "PyCharm Professional",
+      "id": "JetBrains.PyCharm.Professional"
     }
   ]
 }
