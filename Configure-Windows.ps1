@@ -32,10 +32,6 @@ try {
     Write-Log "Configuring system preferences..."
     Set-SystemPreferences
 
-    # Install applications
-    Write-Log "Installing applications..."
-    Install-Applications
-
     # Configure visual preferences
     Write-Log "Configuring visual preferences..."
     Set-VisualPreferences
@@ -55,6 +51,10 @@ try {
     # Configure system tweaks
     Write-Log "Configuring system tweaks..."
     Set-SystemTweaks
+
+    # Install applications
+    Write-Log "Installing applications..."
+    Install-Applications
 
     Write-Log "Configuration completed successfully!"
 }
