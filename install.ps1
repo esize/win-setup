@@ -1,3 +1,16 @@
+# Check and set execution policy
+$currentPolicy = Get-ExecutionPolicy
+if ($currentPolicy -ne "RemoteSigned" -and $currentPolicy -ne "Unrestricted") {
+    try {
+        Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
+        Write-Host "Execution policy has been set to RemoteSigned for current user." -ForegroundColor Green
+    }
+    catch {
+        Write-Host "Failed to set execution policy. Please run PowerShell as Administrator and run: Set-ExecutionPolicy RemoteSigned" -ForegroundColor Red
+        exit 1
+    }
+}
+
 # Download and execute script
 $repo = "esize/win-setup"
 $branch = "main"
