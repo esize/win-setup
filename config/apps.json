@@ -1,0 +1,20 @@
+{
+  "winget": [
+    {
+      "name": "Microsoft.VisualStudioCode",
+      "id": "Microsoft.VisualStudioCode"
+    },
+    {
+      "name": "Google Chrome",
+      "id": "Google.Chrome"
+    },
+    {
+      "name": "7-Zip",
+      "id": "7zip.7zip"
+    },
+    {
+      "name": "Ubuntu 24.04",
+      "id": "Canonical.Ubuntu.2404"
+    }
+  ]
+}
