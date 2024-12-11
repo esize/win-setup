@@ -28,10 +28,10 @@ function Install-WSL {
 
         # Install Ubuntu using winget (completely non-interactive)
         Write-Log "Installing Ubuntu..."
-        winget install -e --id Canonical.Ubuntu.2204 --accept-source-agreements --accept-package-agreements --silent
+        winget install -e --id Canonical.Ubuntu.2404 --accept-source-agreements --accept-package-agreements --silent
 
         # Initialize Ubuntu (non-interactive)
-        $ubuntuExe = "${env:LOCALAPPDATA}\Microsoft\WindowsApps\ubuntu2204.exe"
+        $ubuntuExe = "${env:LOCALAPPDATA}\Microsoft\WindowsApps\ubuntu2404.exe"
         if (Test-Path $ubuntuExe) {
             Start-Process $ubuntuExe -ArgumentList "install --root" -Wait -NoNewWindow
         }
