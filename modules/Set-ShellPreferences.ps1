@@ -98,6 +98,16 @@ function Set-TaskbarPinnedApps {
 
     Write-Log "Configuring taskbar pinned applications..."
 
+    # Install required applications first
+    Write-Log "Installing Google Chrome..."
+    winget install --id Google.Chrome --source winget --accept-source-agreements --accept-package-agreements --silent
+
+    Write-Log "Installing Obsidian..."
+    winget install --id Obsidian.Obsidian --source winget --accept-source-agreements --accept-package-agreements --silent
+
+    # Wait a moment for installations to complete
+    Start-Sleep -Seconds 5
+
     # Define apps in desired order
     $pinnedApps = @(
         @{
