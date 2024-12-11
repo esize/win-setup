@@ -39,12 +39,19 @@ function Set-ShellPreferences {
     if (-not $settings.shell.taskbarItems.taskView) {
         Set-RegistryProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Value 0
     }
-    
+
     # Hide widgets button
     if (-not $settings.shell.taskbarItems.widgets) {
         try {
             Write-Log "Disabling Taskbar Widgets..."
-            Set-RegistryProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -Value 0
+            # Create the registry path if it doesn't exist
+            $registryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+            if (-not (Test-Path $registryPath)) {
+                New-Item -Path $registryPath -Force | Out-Null
+            }
+            
+            # Attempt to set the registry value
+            Set-ItemProperty -Path $registryPath -Name "TaskbarDa" -Value 0 -ErrorAction Stop
         }
         catch [System.Security.SecurityException] {
             Write-Log "Unable to disable Taskbar Widgets due to a Security Exception" -Level Warning
