@@ -102,39 +102,55 @@ function Set-TaskbarPinnedApps {
     $pinnedApps = @(
         @{
             Name = "Windows Terminal"
-            Path = "shell:AppsFolder\Microsoft.WindowsTerminal_8wekyb3d8bbwe!App"
+            AppUserModelID = "Microsoft.WindowsTerminal_8wekyb3d8bbwe!App"
         },
         @{
             Name = "Google Chrome"
-            Path = "shell:AppsFolder\Chrome"
+            AppUserModelID = "Chrome"
+            ExePath = "${env:ProgramFiles}\Google\Chrome\Application\chrome.exe"
         },
         @{
             Name = "File Explorer"
-            Path = "shell:AppsFolder\windows.immersivecontrolpanel_cw5n1h2txyewy!Microsoft.Windows.Explorer"
+            AppUserModelID = "Microsoft.Windows.Explorer"
+            ExePath = "explorer.exe"
         },
         @{
             Name = "Obsidian"
-            Path = "shell:AppsFolder\Obsidian"
+            AppUserModelID = "Obsidian"
+            ExePath = "${env:LocalAppData}\Obsidian\Obsidian.exe"
         }
     )
 
-    # Registry path for taskbar pins
-    $taskbarPinPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband"
+    # Load required assemblies
+    Add-Type -AssemblyName System.Runtime.WindowsRuntime
+    $asTaskGeneric = ([System.WindowsRuntimeSystemExtensions].GetMethods() | Where-Object { $_.Name -eq 'AsTask' -and $_.GetParameters().Count -eq 1 -and $_.GetParameters()[0].ParameterType.Name -eq 'IAsyncOperation`1' })[0]
 
-    # Clear existing pinned items
-    Remove-Item -Path "$taskbarPinPath\Favorites" -Force -ErrorAction SilentlyContinue
-    New-Item -Path "$taskbarPinPath\Favorites" -Force | Out-Null
+    # Get package manager
+    $packageManager = [Windows.Management.Deployment.PackageManager, Windows.Management.Deployment, ContentType = WindowsRuntime]::new()
 
-    # Pin each app in order
     foreach ($app in $pinnedApps) {
         try {
             Write-Log "Pinning $($app.Name) to taskbar..."
-            $shell = New-Object -ComObject Shell.Application
-            $folder = $shell.Namespace($app.Path)
-            $item = $folder.Self
-            $verb = $item.Verbs() | Where-Object { $_.Name -match 'Pin to taskbar' }
-            if ($verb) {
-                $verb.DoIt()
+            
+            # Try UWP app first
+            try {
+                $package = $packageManager.FindPackagesForUser("", $app.AppUserModelID)
+                if ($package) {
+                    (New-Object -ComObject Shell.Application).PinToTaskbar($package.InstalledLocation.Path)
+                    continue
+                }
+            } catch {
+                # Continue to traditional exe pinning if UWP approach fails
+            }
+
+            # Traditional exe pinning
+            if ($app.ExePath -and (Test-Path $app.ExePath)) {
+                $shell = New-Object -ComObject Shell.Application
+                $folder = $shell.Namespace([System.IO.Path]::GetDirectoryName($app.ExePath))
+                $item = $folder.ParseName([System.IO.Path]::GetFileName($app.ExePath))
+                if ($item) {
+                    $item.InvokeVerb('taskbarpin')
+                }
             }
         }
         catch {
@@ -144,6 +160,6 @@ function Set-TaskbarPinnedApps {
 
     # Restart Explorer to apply changes
     Write-Log "Restarting Explorer to apply changes..."
-    Stop-Process -Name explorer -Force
+    Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
     Start-Process explorer
 }
