@@ -47,12 +47,20 @@ function Set-ShellPreferences {
             
             # Create the registry path if it doesn't exist
             $registryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
-            if (-not (Test-Path $registryPath)) {
-                New-Item -Path $registryPath -Force | Out-Null
+            
+            # Try the primary method first
+            try {
+                Set-ItemProperty -Path $registryPath -Name "TaskbarDa" -Value 0 -ErrorAction Stop
             }
-
-            # Use the Set-RegistryProperty helper function instead of direct modification
-            Set-RegistryProperty -Path $registryPath -Name "TaskbarDa" -Value 0
+            catch {
+                # Fallback method using reg.exe
+                Write-Log "Attempting alternative method to disable widgets..." -Level Warning
+                $result = Start-Process "reg.exe" -ArgumentList "add `"HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced`" /v TaskbarDa /t REG_DWORD /d 0 /f" -Wait -PassThru -WindowStyle Hidden
+                
+                if ($result.ExitCode -ne 0) {
+                    Write-Log "Failed to disable widgets using alternative method" -Level Warning
+                }
+            }
         }
         catch {
             Write-Log "Unable to disable Taskbar Widgets: $_" -Level Warning
