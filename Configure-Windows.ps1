@@ -22,6 +22,7 @@ Set-Location $scriptPath
 
 . "$scriptPath\modules\Install-Applications.ps1"
 . "$scriptPath\modules\Install-Fonts.ps1"
+. "$scriptPath\modules\Set-TerminalPreferences.ps1"
 
 # Start configuration
 Write-Log "Starting Windows 11 configuration..."
@@ -75,6 +76,10 @@ try {
     # Install GeistMono Nerd Font
     Write-Log "Installing GeistMono Nerd Font..."
     Install-GeistMonoFont
+
+    # Configure Windows Terminal
+    Write-Log "Configuring Windows Terminal..."
+    Set-TerminalPreferences
 
     Write-Log "Configuration completed successfully!"
 }
