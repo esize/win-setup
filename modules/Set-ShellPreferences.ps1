@@ -96,3 +96,59 @@ function Set-ShellPreferences {
         Write-Log "Failed to restart Explorer: $_" -Level Warning
     }
 } 
+
+function Set-TaskbarPinnedApps {
+    [CmdletBinding()]
+    param()
+
+    Write-Log "Configuring taskbar pinned applications..."
+
+    # Define apps in desired order
+    $pinnedApps = @(
+        @{
+            Name = "Windows Terminal"
+            Path = "shell:AppsFolder\Microsoft.WindowsTerminal_8wekyb3d8bbwe!App"
+        },
+        @{
+            Name = "Google Chrome"
+            Path = "shell:AppsFolder\Chrome"
+        },
+        @{
+            Name = "File Explorer"
+            Path = "shell:AppsFolder\windows.immersivecontrolpanel_cw5n1h2txyewy!Microsoft.Windows.Explorer"
+        },
+        @{
+            Name = "Obsidian"
+            Path = "shell:AppsFolder\Obsidian"
+        }
+    )
+
+    # Registry path for taskbar pins
+    $taskbarPinPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband"
+
+    # Clear existing pinned items
+    Remove-Item -Path "$taskbarPinPath\Favorites" -Force -ErrorAction SilentlyContinue
+    New-Item -Path "$taskbarPinPath\Favorites" -Force | Out-Null
+
+    # Pin each app in order
+    foreach ($app in $pinnedApps) {
+        try {
+            Write-Log "Pinning $($app.Name) to taskbar..."
+            $shell = New-Object -ComObject Shell.Application
+            $folder = $shell.Namespace($app.Path)
+            $item = $folder.Self
+            $verb = $item.Verbs() | Where-Object { $_.Name -match 'Pin to taskbar' }
+            if ($verb) {
+                $verb.DoIt()
+            }
+        }
+        catch {
+            Write-Log "Failed to pin $($app.Name): $_" -Level Warning
+        }
+    }
+
+    # Restart Explorer to apply changes
+    Write-Log "Restarting Explorer to apply changes..."
+    Stop-Process -Name explorer -Force
+    Start-Process explorer
+}

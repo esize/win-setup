@@ -43,6 +43,10 @@ try {
     Write-Log "Configuring shell preferences..."
     Set-ShellPreferences
 
+    # Configure taskbar pinned apps
+    Write-Log "Configuring taskbar pinned apps..."
+    Set-TaskbarPinnedApps
+
     # Install WSL2 and Ubuntu
     Write-Log "Installing WSL2 and Ubuntu..."
     Install-WSL
