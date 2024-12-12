@@ -16,6 +16,7 @@ Set-Location $scriptPath
 . "$scriptPath\utils\Write-Log.ps1"
 . "$scriptPath\utils\Check-AdminRights.ps1"
 . "$scriptPath\utils\Restart-Explorer.ps1"
+. "$scriptPath\utils\Write-ProgressBar.ps1"
 
 # Import configuration modules
 . "$scriptPath\modules\Set-SystemPreferences.ps1"
@@ -89,11 +90,11 @@ try {
     Remove-DefaultApps
 
     # Install applications
-    if (-not ($debugMode -and $debugConfig.system.skipApplications)) {
+    if (-not $SkipApps) {
         Write-Log "Installing applications..."
         Install-Applications
     } else {
-        Write-Log "Debug mode: Skipping application installation..." -Level Information
+        Write-Log "Skipping application installation..." -Level Information
     }
 
     # Install GeistMono Nerd Font
