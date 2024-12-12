@@ -26,25 +26,25 @@ function Write-Log {
     
     # Define log symbols and colors
     $LogStyles = @{
-        'Information' = @{
-            'Symbol' = '→';
-            'Color' = 'Cyan'
-        };
-        'Warning' = @{
-            'Symbol' = '⚠';
-            'Color' = 'Yellow'
-        };
-        'Error' = @{
-            'Symbol' = '✗';
-            'Color' = 'Red'
-        };
-        'Success' = @{
-            'Symbol' = '✓';
-            'Color' = 'Green'
-        };
-        'Debug' = @{
-            'Symbol' = '🔧';
-            'Color' = 'Gray'
+        Information = @{
+            Symbol = '→'
+            Color = 'Cyan'
+        }
+        Warning = @{
+            Symbol = '⚠'
+            Color = 'Yellow'
+        }
+        Error = @{
+            Symbol = '✗'
+            Color = 'Red'
+        }
+        Success = @{
+            Symbol = '✓'
+            Color = 'Green'
+        }
+        Debug = @{
+            Symbol = '🔧'
+            Color = 'Gray'
         }
     }
     
