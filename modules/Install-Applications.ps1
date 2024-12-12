@@ -35,5 +35,5 @@ function Install-Applications {
         Install-Application -appId $app.id
     }
     
-    Write-SuccessLog "All applications installed!"
+    Write-InfoLog "All applications installed!"
 } 

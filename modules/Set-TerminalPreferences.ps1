@@ -112,7 +112,7 @@ function Set-TerminalPreferences {
 
         # Convert and save the settings
         $terminalSettings | ConvertTo-Json -Depth 10 | Set-Content $terminalSettingsPath -Force
-        Write-SuccessLog "Windows Terminal settings configured successfully!"
+        Write-InfoLog "Windows Terminal settings configured successfully!"
     }
     catch {
         Write-ErrorLog "Failed to configure Windows Terminal: $_"

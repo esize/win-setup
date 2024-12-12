@@ -30,5 +30,5 @@ function Set-StartMenuPreferences {
     Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "CortanaConsent" -Value 0
 
 
-    Write-SuccessLog "Start Menu preferences configured successfully!"
+    Write-InfoLog "Start Menu preferences configured successfully!"
 } 

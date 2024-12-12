@@ -16,7 +16,7 @@ function Install-PowerShell7 {
             # Refresh environment variables
             $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
             
-            Write-SuccessLog "PowerShell 7 installed successfully!"
+            Write-InfoLog "PowerShell 7 installed successfully!"
         }
         catch {
             Write-ErrorLog "Failed to install PowerShell 7: $_"

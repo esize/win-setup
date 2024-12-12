@@ -62,7 +62,7 @@ function Install-GeistMonoFont {
 '@
         [Win32]::SendMessage($HWND_BROADCAST, $WM_FONTCHANGE, [IntPtr]::Zero, [IntPtr]::Zero)
 
-        Write-SuccessLog "GeistMono Nerd Font installed successfully!"
+        Write-InfoLog "GeistMono Nerd Font installed successfully!"
     }
     catch {
         Write-ErrorLog "Failed to install GeistMono Nerd Font: $_"

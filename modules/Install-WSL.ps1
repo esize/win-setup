@@ -44,7 +44,7 @@ function Install-WSL {
         Write-ProgressBar -Current $currentStep -Total $totalSteps -Message "Installing Ubuntu"
         Install-Application -appId Canonical.Ubuntu.2404
 
-        Write-SuccessLog "WSL2 and Ubuntu installation completed successfully!"
+        Write-InfoLog "WSL2 and Ubuntu installation completed successfully!"
     }
     catch {
         Write-ErrorLog "Failed to install WSL2: $_"

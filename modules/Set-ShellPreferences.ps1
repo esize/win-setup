@@ -124,7 +124,7 @@ foreach ($path in $paths) {
         # Cleanup
         Remove-Item $tempScript -Force -ErrorAction SilentlyContinue
 
-        Write-SuccessLog "Taskbar apps configured successfully!"
+        Write-InfoLog "Taskbar apps configured successfully!"
     }
     catch {
         Write-WarningLog "Failed to configure taskbar apps: $_"
