@@ -12,6 +12,12 @@ param(
 $scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $scriptPath
 
+# Import utility functions
+. "$scriptPath\utils\Write-Log.ps1"
+. "$scriptPath\utils\Check-AdminRights.ps1"
+. "$scriptPath\utils\Restart-Explorer.ps1"
+. "$scriptPath\utils\Write-ProgressBar.ps1"
+
 # Check for debug configuration
 $debugConfigPath = "$env:USERPROFILE\win-setup-debug.json"
 $debugConfig = $null
@@ -20,11 +26,6 @@ if (Test-Path $debugConfigPath) {
     Write-Log "Debug configuration found!" -Level Warning
 }
 
-# Import utility functions
-. "$scriptPath\utils\Write-Log.ps1"
-. "$scriptPath\utils\Check-AdminRights.ps1"
-. "$scriptPath\utils\Restart-Explorer.ps1"
-. "$scriptPath\utils\Write-ProgressBar.ps1"
 
 # Configure logging based on debug settings
 if ($debugConfig.debug.verbose) {
