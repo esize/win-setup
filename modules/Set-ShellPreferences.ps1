@@ -62,7 +62,7 @@ function Set-ShellPreferences {
             foreach ($policy in $policies) {
                 try {
                     if (-not (Test-Path $policy.Path)) {
-                        New-Item -Path $policy.Path -Force | Out-Null
+                        New-Item -Path $policy.Path -Force -ErrorAction Stop | Out-Null
                     }
                     Set-ItemProperty -Path $policy.Path -Name $policy.Name -Value $policy.Value -Type DWord -ErrorAction Stop
                 }
@@ -71,27 +71,32 @@ function Set-ShellPreferences {
                 }
             }
 
-            # User preferences method
+            # User preferences method - with error handling
             $userSettings = @(
                 @{
                     Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
                     Name = "TaskbarDa"
                     Value = 0
-                },
-                @{
-                    Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
-                    Name = "ShowTaskViewButton"
-                    Value = 0
                 }
             )
 
             foreach ($setting in $userSettings) {
-                Set-RegistryProperty -Path $setting.Path -Name $setting.Name -Value $setting.Value
+                try {
+                    Ensure-RegistryPath -Path $setting.Path
+                    Set-ItemProperty -Path $setting.Path -Name $setting.Name -Value $setting.Value -ErrorAction Stop
+                }
+                catch {
+                    Write-Log "Could not set user preference $($setting.Name) - this is not critical" -Level Warning
+                    # Continue execution even if this fails
+                }
             }
 
-            # Additional direct registry modification as final step
-            if (-not (Get-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -ErrorAction SilentlyContinue)) {
+            # Additional registry modification as fallback
+            try {
                 reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v TaskbarDa /t REG_DWORD /d 0 /f | Out-Null
+            }
+            catch {
+                Write-Log "Fallback method for disabling widgets failed - manual configuration may be required" -Level Warning
             }
         }
         catch {
