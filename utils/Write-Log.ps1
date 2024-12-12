@@ -6,62 +6,38 @@ function Write-Log {
         
         [Parameter(Mandatory = $false)]
         [ValidateSet('Information', 'Warning', 'Error', 'Success', 'Debug')]
-        [string]$Level = 'Information',
-        
-        [Parameter(Mandatory = $false)]
-        [string]$LogFilePath = "$(Get-Location)\logs\script.log",
-        
-        [Parameter(Mandatory = $false)]
-        [switch]$NoConsole
+        [string]$Level = 'Information'
     )
     
-    # Create logs directory if it doesn't exist
-    $LogDir = Split-Path $LogFilePath -Parent
-    if (-not (Test-Path $LogDir)) {
-        New-Item -ItemType Directory -Path $LogDir -Force | Out-Null
+    $Colors = @{
+        Information = 'Cyan'
+        Warning = 'Yellow'
+        Error = 'Red'
+        Success = 'Green'
+        Debug = 'Gray'
     }
 
-    # Get current timestamp (for file logging only)
-    $Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    $Symbols = @{
+        Information = '→'
+        Warning = '⚠'
+        Error = '✗'
+        Success = '✓'
+        Debug = '🔧'
+    }
+
+    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    $logMessage = "  $($Symbols[$Level]) $Message"
     
-    # Define log symbols and colors
-    $LogStyles = @{
-        Information = @{
-            Symbol = '→'
-            Color = 'Cyan'
-        }
-        Warning = @{
-            Symbol = '⚠'
-            Color = 'Yellow'
-        }
-        Error = @{
-            Symbol = '✗'
-            Color = 'Red'
-        }
-        Success = @{
-            Symbol = '✓'
-            Color = 'Green'
-        }
-        Debug = @{
-            Symbol = '🔧'
-            Color = 'Gray'
-        }
+    # Write to console with appropriate color
+    Write-Host $logMessage -ForegroundColor $Colors[$Level]
+    
+    # Write to log file if logging directory exists
+    $logDir = Join-Path (Get-Location) "logs"
+    $logFile = Join-Path $logDir "script.log"
+    
+    if (-not (Test-Path $logDir)) {
+        New-Item -ItemType Directory -Path $logDir -Force | Out-Null
     }
     
-    # Create the log entries
-    $FileLogEntry = "[$Timestamp] [$Level] $Message"
-    $ConsoleLogEntry = "  $($LogStyles[$Level].Symbol) $Message"
-    
-    # Write to log file
-    try {
-        Add-Content -Path $LogFilePath -Value $FileLogEntry -ErrorAction Stop
-    }
-    catch {
-        Write-Error "Failed to write to log file: $_"
-    }
-    
-    # Write to console if not suppressed
-    if (-not $NoConsole) {
-        Write-Host $ConsoleLogEntry -ForegroundColor $LogStyles[$Level].Color
-    }
+    "[$timestamp] [$Level] $Message" | Add-Content -Path $logFile -ErrorAction SilentlyContinue
 }
