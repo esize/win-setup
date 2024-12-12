@@ -16,14 +16,21 @@ if (-not (Get-Module -ListAvailable -Name PoShLog)) {
 
 Import-Module PoShLog
 
-# Initialize logging
-$logConfig = New-LoggerConfig
-$logConfig | 
-    Add-SinkConsole -RestrictedToMinimumLevel Information |
-    Add-SinkFile -Path "logs/script.log" -RestrictedToMinimumLevel Debug |
-    Set-LoggerConfig
 
-Initialize-Logger -LoggerConfig $logConfig
+
+New-Logger |
+    Set-MinimumLevel -Value Debug |
+    Add-SinkFile -Path "logs/script.log" -RestrictedToMinimumLevel Debug |
+    Add-SinkConsole |
+    Start-Logger
+
+
+Write-VerboseLog 'Test verbose message'
+Write-DebugLog 'Test debug message'
+Write-InfoLog 'Test info message'
+Write-WarningLog 'Test warning message'
+Write-ErrorLog 'Test error message'
+Write-FatalLog 'Test fatal message'
 
 # Set script location as working directory
 $scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
