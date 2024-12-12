@@ -50,6 +50,7 @@ function Set-TerminalPreferences {
                 'cursorShape' = 'bar'
                 'font' = @{
                     'face' = 'GeistMono Nerd Font Mono'
+                    'fallback' = @('Cascadia Mono', 'Consolas')
                 }
                 'opacity' = 90
                 'useAcrylic' = $false

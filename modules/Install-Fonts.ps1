@@ -42,16 +42,18 @@ function Install-GeistMonoFont {
                 }
             }
         }
+        @{
+            Name = "Verifying installation"
+            Action = {
+                $installedFonts = (New-Object System.Drawing.Text.InstalledFontCollection).Families.Name
+                if ($installedFonts -notcontains "GeistMono Nerd Font Mono") {
+                    throw "Font verification failed - GeistMono Nerd Font Mono not found in system fonts"
+                }
+            }
+        }
     )
 
-    # Execute steps with progress
-    $totalSteps = $steps.Count
-    $currentStep = 0
-
     foreach ($step in $steps) {
-        $currentStep++
-        $percentComplete = [math]::Round(($currentStep / $totalSteps) * 100)
-        
         Write-Host "  → $($step.Name)..." -NoNewline
         
         try {
@@ -73,4 +75,14 @@ function Install-GeistMonoFont {
     }
     
     Write-Host "`n✓ Font installation completed!" -ForegroundColor Green
+
+    # Broadcast font change notification
+    $signature = @'
+    [DllImport("gdi32.dll")]
+    public static extern int AddFontResource(string lpFilename);
+    [DllImport("user32.dll")]
+    public static extern int SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+'@
+    Add-Type -MemberDefinition $signature -Name WinAPI -Namespace Win32
+    [Win32.WinAPI]::SendMessage(-1, 0x001D, 0, 0) | Out-Null
 } 
