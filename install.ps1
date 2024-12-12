@@ -40,7 +40,7 @@ $steps = @(
     @{ Name = "Downloading setup files"; Action = {
         $zipUrl = "https://github.com/$repo/archive/refs/heads/$branch.zip"
         $zipFile = "$setupDir\repo.zip"
-        Invoke-WebRequest -Uri $zipUrl -OutFile $zipFile
+        Invoke-WebRequest -Uri $zipUrl -OutFile $zipFile -UseBasicParsing -NoProgress
     }}
     @{ Name = "Extracting files"; Action = {
         Expand-Archive -Path "$setupDir\repo.zip" -DestinationPath $setupDir -Force

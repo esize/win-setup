@@ -22,7 +22,7 @@ function Install-WSL {
         Write-ProgressBar -Current $currentStep -Total $totalSteps -Message "Downloading WSL2 kernel update"
         $wslUpdateUrl = "https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi"
         $wslUpdateFile = "$env:TEMP\wsl_update_x64.msi"
-        Invoke-WebRequest -Uri $wslUpdateUrl -OutFile $wslUpdateFile
+        Invoke-WebRequest -Uri $wslUpdateUrl -OutFile $wslUpdateFile -UseBasicParsing -NoProgress
 
         # Install WSL2 kernel update
         $currentStep++
