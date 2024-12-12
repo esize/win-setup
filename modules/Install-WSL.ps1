@@ -2,7 +2,7 @@ function Install-WSL {
     [CmdletBinding()]
     param()
 
-    Write-Log "Starting WSL2 installation..."
+    Write-InfoLog "Starting WSL2 installation..."
     $totalSteps = 7
     $currentStep = 0
 
@@ -44,10 +44,10 @@ function Install-WSL {
         Write-ProgressBar -Current $currentStep -Total $totalSteps -Message "Installing Ubuntu"
         Install-Application -appId Canonical.Ubuntu.2404
 
-        Write-Log "WSL2 and Ubuntu installation completed successfully!" -Level Success
+        Write-SuccessLog "WSL2 and Ubuntu installation completed successfully!"
     }
     catch {
-        Write-Log "Failed to install WSL2: $_" -Level Error
+        Write-ErrorLog "Failed to install WSL2: $_"
         throw
     }
     finally {

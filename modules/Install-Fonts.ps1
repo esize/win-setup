@@ -2,15 +2,15 @@ function Install-GeistMonoFont {
     [CmdletBinding()]
     param()
 
-    Write-Log "Installing GeistMono Nerd Font..."
+    Write-InfoLog "Installing GeistMono Nerd Font..."
     
     # Cleanup
-    Write-Log "  → Cleaning up..." -Level Information
+    Write-VerboseLog "  → Cleaning up..."
     if (Test-Path $tempPath) {
         Remove-Item -Path $tempPath -Recurse -Force
-        Write-Log "  ✓ Cleaning up" -Level Success
+        Write-SuccessLog "  ✓ Cleaning up"
     }
     
-    Write-Log "Font installation completed!" -Level Success
+    Write-SuccessLog "Font installation completed!"
     Restart-Explorer
 } 

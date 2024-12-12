@@ -3,7 +3,7 @@ function Restart-Explorer {
     param()
     
     try {
-        Write-Log "Restarting Explorer to apply changes..."
+        Write-InfoLog "Restarting Explorer to apply changes..."
         # Stop Explorer process
         Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
         
@@ -29,6 +29,6 @@ function Restart-Explorer {
         Remove-Variable shell
     }
     catch {
-        Write-Log "Failed to restart Explorer: $_" -Level Warning
+        Write-WarningLog "Failed to restart Explorer: $_"
     }
 } 

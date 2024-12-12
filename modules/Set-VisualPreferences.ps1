@@ -2,7 +2,7 @@ function Set-VisualPreferences {
     [CmdletBinding()]
     param()
 
-    Write-Log "Configuring visual preferences..."
+    Write-InfoLog "Configuring visual preferences..."
 
     try {
         # Enable transparency effects
@@ -17,9 +17,9 @@ function Set-VisualPreferences {
         Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseThreshold1" -Value "0"
         Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseThreshold2" -Value "0"
 
-        Write-Log "Visual preferences configured successfully!"
+        Write-SuccessLog "Visual preferences configured successfully!"
     }
     catch {
-        Write-Log "Failed to configure visual preferences: $_" -Level Error
+        Write-ErrorLog "Failed to configure visual preferences: $_"
     }
 } 

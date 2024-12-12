@@ -1,0 +1,6 @@
+[2024-12-12 13:53:05] [Error] Script is NOT running with administrative privileges!
+[2024-12-12 13:53:05] [Warning] Please run this script as Administrator.
+[2024-12-12 13:53:05] [Error] An error occurred during configuration: Exception calling "GetCurrent" with "0" argument(s): "Windows Principal functionality is not supported on this platform."
+[2024-12-12 13:53:14] [Error] Script is NOT running with administrative privileges!
+[2024-12-12 13:53:14] [Warning] Please run this script as Administrator.
+[2024-12-12 13:53:14] [Error] An error occurred during configuration: Exception calling "GetCurrent" with "0" argument(s): "Windows Principal functionality is not supported on this platform."

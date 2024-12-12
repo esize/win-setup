@@ -2,7 +2,7 @@ function Remove-DefaultApps {
     [CmdletBinding()]
     param()
 
-    Write-Log "Removing default Windows applications..."
+    Write-InfoLog "Removing default Windows applications..."
     
     $appsToRemove = @(
         "Microsoft.Windows.Copilot",
@@ -35,13 +35,13 @@ function Remove-DefaultApps {
             $appExists = Get-AppxPackage -Name $app -AllUsers -ErrorAction SilentlyContinue
             if ($appExists) {
                 Get-AppxPackage -Name $app -AllUsers | Remove-AppxPackage -ErrorAction Stop
-                Write-Log "Successfully removed $app" -Level Information
+                Write-SuccessLog "Successfully removed $app"
             } else {
-                Write-Log "$app not found, skipping..." -Level Information
+                Write-VerboseLog "$app not found, skipping..."
             }
         }
         catch {
-            Write-Log "Failed to remove $app : $_" -Level Warning
+            Write-WarningLog "Failed to remove $app : $_"
         }
     }
 } 

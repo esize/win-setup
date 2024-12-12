@@ -7,10 +7,10 @@ function Test-AdminRights {
 $isAdmin = Test-AdminRights
 
 if ($isAdmin) {
-    Write-Log "Script is running with administrative privileges." -Level Success
+    Write-SuccessLog "Script is running with administrative privileges."
     exit 0
 } else {
-    Write-Log "Script is NOT running with administrative privileges!" -Level Error
-    Write-Log "Please run this script as Administrator." -Level Warning
+    Write-ErrorLog "Script is NOT running with administrative privileges!"
+    Write-WarningLog "Please run this script as Administrator."
     exit 1
 }

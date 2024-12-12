@@ -2,7 +2,7 @@ function Set-DeveloperPreferences {
     [CmdletBinding()]
     param()
 
-    Write-Log "Configuring developer preferences..."
+    Write-InfoLog "Configuring developer preferences..."
 
     # Enable Developer Mode
     $developerModePath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock"

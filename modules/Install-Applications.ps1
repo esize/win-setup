@@ -9,7 +9,7 @@ function Install-Application {
         # Check if the application is already installed
         $installed = winget list --id $appId --accept-source-agreements 2>$null
         if ($installed -match $appId) {
-            Write-Log "$appId is already installed, skipping..." -Level Information
+            Write-VerboseLog "$appId is already installed, skipping..."
             return
         }
 
@@ -17,7 +17,7 @@ function Install-Application {
         winget install -e --id $appId --accept-source-agreements --accept-package-agreements -h | Out-Null
     }
     catch {
-        Write-Log "Failed to install $appId : $_" -Level Warning
+        Write-WarningLog "Failed to install $appId : $_"
     }
 }
 
@@ -35,5 +35,5 @@ function Install-Applications {
         Install-Application -appId $app.id
     }
     
-    Write-Log "All applications installed!" -Level Success
+    Write-SuccessLog "All applications installed!"
 } 

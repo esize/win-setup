@@ -2,7 +2,7 @@ function Set-SystemPreferences {
     [CmdletBinding()]
     param()
 
-    Write-Log "Configuring system preferences..."
+    Write-InfoLog "Configuring system preferences..."
 
     # Show file extensions
     Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "HideFileExt" -Value 0
