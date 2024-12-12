@@ -65,3 +65,5 @@ function Write-Log {
         Write-Host $ConsoleLogEntry -ForegroundColor $LogStyles[$Level].Color
     }
 }
+
+Export-ModuleMember -Function Write-Log
