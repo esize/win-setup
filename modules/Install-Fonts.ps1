@@ -31,12 +31,24 @@ function Install-GeistMonoFont {
         foreach ($font in $fonts) {
             $destPath = Join-Path $systemFontsPath $font.Name
             
+            # Check if font is already installed and try to close any open handles
+            if (Test-Path $destPath) {
+                Remove-Item -Path $destPath -Force -ErrorAction SilentlyContinue
+                Start-Sleep -Milliseconds 500  # Add small delay
+            }
+            
             # Copy font file to Windows Fonts directory
             Copy-Item -Path $font.FullName -Destination $destPath -Force
+            Start-Sleep -Milliseconds 100  # Add small delay
 
             # Add font to registry
             $regPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts"
             $fontName = $font.Name -replace "\.(ttf|otf)$", " (TrueType)"
+            
+            # Remove existing registry entry if it exists
+            Remove-ItemProperty -Path $regPath -Name $fontName -ErrorAction SilentlyContinue
+            Start-Sleep -Milliseconds 100  # Add small delay
+            
             Set-ItemProperty -Path $regPath -Name $fontName -Value $font.Name -Type String
         }
 
@@ -69,6 +81,8 @@ function Install-GeistMonoFont {
         throw
     }
     finally {
+        # Add delay before cleanup
+        Start-Sleep -Seconds 1
         # Cleanup
         if (Test-Path $tempPath) {
             Remove-Item -Path $tempPath -Recurse -Force -ErrorAction SilentlyContinue
