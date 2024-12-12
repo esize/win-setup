@@ -130,76 +130,74 @@ function Set-TaskbarPinnedApps {
     [CmdletBinding()]
     param()
 
-    # Install required applications first
-    Write-Log "Installing Google Chrome..."
-    Install-Application -appId Google.Chrome
-
-    Write-Log "Installing Obsidian..."
-    Install-Application -appId Obsidian.Obsidian
-
-    # Wait a moment for installations to complete
-    Start-Sleep -Seconds 5
+    Write-Log "Configuring taskbar pinned apps..."
 
     # Define apps in desired order
     $pinnedApps = @(
         @{
             Name = "Windows Terminal"
-            AppUserModelID = "Microsoft.WindowsTerminal_8wekyb3d8bbwe!App"
+            Path = "shell:AppsFolder\Microsoft.WindowsTerminal_8wekyb3d8bbwe!App"
         },
         @{
             Name = "Google Chrome"
-            AppUserModelID = "Chrome"
-            ExePath = "${env:ProgramFiles}\Google\Chrome\Application\chrome.exe"
+            Path = "${env:ProgramFiles}\Google\Chrome\Application\chrome.exe"
         },
         @{
             Name = "File Explorer"
-            AppUserModelID = "Microsoft.Windows.Explorer"
-            ExePath = "explorer.exe"
+            Path = "explorer.exe"
         },
         @{
             Name = "Obsidian"
-            AppUserModelID = "Obsidian"
-            ExePath = "${env:LocalAppData}\Obsidian\Obsidian.exe"
+            Path = "${env:LocalAppData}\Obsidian\Obsidian.exe"
         }
     )
 
-    # Load required assemblies
-    Add-Type -AssemblyName System.Runtime.WindowsRuntime
-    $asTaskGeneric = ([System.WindowsRuntimeSystemExtensions].GetMethods() | Where-Object { $_.Name -eq 'AsTask' -and $_.GetParameters().Count -eq 1 -and $_.GetParameters()[0].ParameterType.Name -eq 'IAsyncOperation`1' })[0]
+    try {
+        # Create the required PowerShell script
+        $scriptContent = @'
+$Shell = New-Object -ComObject Shell.Application
+$Desktop = $Shell.NameSpace('shell:::{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}')
 
-    # Get package manager
-    $packageManager = [Windows.Management.Deployment.PackageManager, Windows.Management.Deployment, ContentType = WindowsRuntime]::new()
-
-    foreach ($app in $pinnedApps) {
-        try {
-            Write-Log "Pinning $($app.Name) to taskbar..."
-            
-            # Try UWP app first
-            try {
-                $package = $packageManager.FindPackagesForUser("", $app.AppUserModelID)
-                if ($package) {
-                    (New-Object -ComObject Shell.Application).PinToTaskbar($package.InstalledLocation.Path)
-                    continue
-                }
-            } catch {
-                # Continue to traditional exe pinning if UWP approach fails
-            }
-
-            # Traditional exe pinning
-            if ($app.ExePath -and (Test-Path $app.ExePath)) {
-                $shell = New-Object -ComObject Shell.Application
-                $folder = $shell.Namespace([System.IO.Path]::GetDirectoryName($app.ExePath))
-                $item = $folder.ParseName([System.IO.Path]::GetFileName($app.ExePath))
-                if ($item) {
-                    $item.InvokeVerb('taskbarpin')
-                }
-            }
-        }
-        catch {
-            Write-Log "Failed to pin $($app.Name): $_" -Level Warning
-        }
+function Pin-ToTaskbar([string]$path) {
+    $folder = Split-Path $path
+    $file = Split-Path $path -Leaf
+    
+    if ($path.StartsWith("shell:")) {
+        $item = $Shell.NameSpace($path).Self
+    } else {
+        $item = $Shell.NameSpace($folder).ParseName($file)
     }
+    
+    if ($item) {
+        $item.InvokeVerb('taskbarpin')
+    }
+}
 
-    # Restart Explorer to apply changes
-    Restart-Explorer
+$paths = $args[0] -split ';'
+foreach ($path in $paths) {
+    if (Test-Path $path -PathType Leaf) {
+        Pin-ToTaskbar $path
+    }
+}
+'@
+
+        # Save the script to a temporary file
+        $tempScript = [System.IO.Path]::GetTempFileName() + ".ps1"
+        $scriptContent | Out-File -FilePath $tempScript -Encoding UTF8
+
+        # Build the paths string
+        $validPaths = $pinnedApps.Path | Where-Object { $_.StartsWith("shell:") -or (Test-Path $_) }
+        $pathsString = $validPaths -join ';'
+
+        # Execute the script with elevated privileges
+        Start-Process powershell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$tempScript`" `"$pathsString`"" -Verb RunAs -Wait
+
+        # Cleanup
+        Remove-Item $tempScript -Force -ErrorAction SilentlyContinue
+
+        Write-Log "Taskbar apps configured successfully!"
+    }
+    catch {
+        Write-Log "Failed to configure taskbar apps: $_" -Level Warning
+    }
 }
