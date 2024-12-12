@@ -28,9 +28,12 @@ Invoke-WebRequest -Uri $zipUrl -OutFile $zipFile
 Expand-Archive -Path $zipFile -DestinationPath $setupDir -Force
 $extractedDir = Get-ChildItem -Path $setupDir -Filter "win-setup-*" | Select-Object -First 1
 
+# Get command line arguments for passing through to Configure-Windows.ps1
+$scriptArgs = $args -join ' '
+
 # Run configuration script
 Set-Location $extractedDir.FullName
-.\Configure-Windows.ps1
+& .\Configure-Windows.ps1 $scriptArgs
 
 # Cleanup
 Start-Sleep -Seconds 2  # Give processes time to release handles

@@ -1,6 +1,9 @@
 #Requires -RunAsAdministrator
 [CmdletBinding()]
-param()
+param(
+    [Parameter()]
+    [switch]$SkipApps
+)
 
 # Set script location as working directory
 $scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -71,8 +74,12 @@ try {
     Remove-DefaultApps
 
     # Install applications
-    Write-Log "Installing applications..."
-    Install-Applications
+    if (-not $SkipApps) {
+        Write-Log "Installing applications..."
+        Install-Applications
+    } else {
+        Write-Log "Skipping application installation..." -Level Information
+    }
 
     # Install GeistMono Nerd Font
     Write-Log "Installing GeistMono Nerd Font..."
