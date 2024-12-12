@@ -46,9 +46,9 @@ Set-Location $scriptPath
 
 
 # Import remaining utilities
-. (Join-Path $utilsPath "Check-AdminRights.ps1")
-. (Join-Path $utilsPath "Restart-Explorer.ps1")
-. (Join-Path $utilsPath "Write-ProgressBar.ps1")
+. "$scriptPath\utils\Check-AdminRights.ps1"
+. "$scriptPath\utils\Restart-Explorer.ps1"
+. "$scriptPath\utils\Write-ProgressBar.ps1"
 
 # Check for debug configuration
 $debugConfigPath = "$env:USERPROFILE\win-setup-debug.json"
