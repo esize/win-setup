@@ -114,11 +114,19 @@ while ($true) {
 # Build configuration from selections
 $selected.Keys | ForEach-Object {
     $option = $debugOptions[$_]
-    $debugConfig[$option.category][$option.key] = $true
+    if ($option) {
+        if (-not $debugConfig[$option.category]) {
+            $debugConfig[$option.category] = @{}
+        }
+        $debugConfig[$option.category][$option.key] = $true
+    }
 }
 
 # Save configuration
 $debugConfigPath = "$env:USERPROFILE\win-setup-debug.json"
+if (Test-Path $debugConfigPath) {
+    Remove-Item -Path $debugConfigPath -Force
+}
 $debugConfig | ConvertTo-Json -Depth 3 | Set-Content $debugConfigPath
 
 Write-Host "`n✓ Debug configuration saved to: $debugConfigPath" -ForegroundColor Green
