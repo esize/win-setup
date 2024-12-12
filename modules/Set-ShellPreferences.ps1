@@ -45,18 +45,8 @@ function Set-ShellPreferences {
         try {
             Write-Log "Disabling Taskbar Widgets..."
             
-            # Array of registry paths and values to disable widgets
-            $widgetSettings = @(
-                @{
-                    Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
-                    Name = "TaskbarDa"
-                    Value = 0
-                },
-                @{
-                    Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
-                    Name = "ShowTaskViewButton"
-                    Value = 0
-                },
+            # Primary method using policy keys
+            $policies = @(
                 @{
                     Path = "HKLM:\SOFTWARE\Policies\Microsoft\Dsh"
                     Name = "AllowNewsAndInterests"
@@ -69,32 +59,44 @@ function Set-ShellPreferences {
                 }
             )
 
-            # Apply each registry setting
-            foreach ($setting in $widgetSettings) {
+            foreach ($policy in $policies) {
                 try {
-                    # Ensure registry path exists
-                    if (-not (Test-Path $setting.Path)) {
-                        New-Item -Path $setting.Path -Force | Out-Null
+                    if (-not (Test-Path $policy.Path)) {
+                        New-Item -Path $policy.Path -Force | Out-Null
                     }
-                    
-                    # Set registry value
-                    Set-ItemProperty -Path $setting.Path -Name $setting.Name -Value $setting.Value -Type DWord -ErrorAction Stop
+                    Set-ItemProperty -Path $policy.Path -Name $policy.Name -Value $policy.Value -Type DWord -ErrorAction Stop
                 }
                 catch {
-                    Write-Log "Failed to set registry value $($setting.Name) at $($setting.Path): $_" -Level Warning
+                    Write-Log "Note: Could not set policy at $($policy.Path) - this is expected on some systems" -Level Debug
                 }
             }
 
-            # Additional direct registry modification using reg.exe as fallback
-            $result = Start-Process "reg.exe" -ArgumentList "add `"HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced`" /v TaskbarDa /t REG_DWORD /d 0 /f" -Wait -PassThru -WindowStyle Hidden
-            
-            if ($result.ExitCode -ne 0) {
-                Write-Log "Fallback method to disable widgets failed" -Level Warning
+            # User preferences method
+            $userSettings = @(
+                @{
+                    Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+                    Name = "TaskbarDa"
+                    Value = 0
+                },
+                @{
+                    Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+                    Name = "ShowTaskViewButton"
+                    Value = 0
+                }
+            )
+
+            foreach ($setting in $userSettings) {
+                Set-RegistryProperty -Path $setting.Path -Name $setting.Name -Value $setting.Value
+            }
+
+            # Additional direct registry modification as final step
+            if (-not (Get-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -ErrorAction SilentlyContinue)) {
+                reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v TaskbarDa /t REG_DWORD /d 0 /f | Out-Null
             }
         }
         catch {
-            Write-Log "Unable to disable Taskbar Widgets: $_" -Level Warning
-            Write-Log $_.Exception.StackTrace -Level Debug
+            Write-Log "Unable to fully disable Taskbar Widgets. Some settings may require manual configuration." -Level Warning
+            Write-Log $_.Exception.Message -Level Debug
         }
     }
 
@@ -200,4 +202,5 @@ function Set-TaskbarPinnedApps {
 
     # Restart Explorer to apply changes
     Restart-Explorer
+}
 }
