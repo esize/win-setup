@@ -14,7 +14,16 @@ Set-Location $scriptPath
 
 # Import utility functions
 $utilsPath = Join-Path $scriptPath "utils"
-. (Join-Path $utilsPath "Write-Log.ps1")
+$WriteLogPath = Join-Path $utilsPath "Write-Log.ps1"
+
+# Import Write-Log first since other scripts depend on it
+if (Test-Path $WriteLogPath) {
+    . $WriteLogPath
+} else {
+    throw "Required utility Write-Log.ps1 not found at: $WriteLogPath"
+}
+
+# Import remaining utilities
 . (Join-Path $utilsPath "Check-AdminRights.ps1")
 . (Join-Path $utilsPath "Restart-Explorer.ps1")
 . (Join-Path $utilsPath "Write-ProgressBar.ps1")
@@ -56,13 +65,14 @@ if ($debugConfig.debug.verbose) {
 . "$scriptPath\modules\Set-TerminalPreferences.ps1"
 
 # Start configuration
-Write-Log "Starting Windows 11 configuration..."
-
 try {
     # Verify admin rights
-    if (-not (Test-AdminRights)) {
-        throw "Script must be run as administrator!"
+    $isAdmin = Test-AdminRights
+    if (-not $isAdmin) {
+        Write-Host "❌ Script must be run as administrator!" -ForegroundColor Red
+        exit 1
     }
+    Write-Log "Starting Windows 11 configuration..."
 
     # Configure system settings
     Write-Log "Configuring system preferences..."
