@@ -124,7 +124,7 @@ function Set-ShellPreferences {
 
     # Restart Explorer to apply changes
     Restart-Explorer
-} 
+}
 
 function Set-TaskbarPinnedApps {
     [CmdletBinding()]
@@ -202,5 +202,4 @@ function Set-TaskbarPinnedApps {
 
     # Restart Explorer to apply changes
     Restart-Explorer
-}
 }
