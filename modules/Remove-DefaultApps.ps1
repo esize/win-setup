@@ -35,7 +35,7 @@ function Remove-DefaultApps {
             $appExists = Get-AppxPackage -Name $app -AllUsers -ErrorAction SilentlyContinue
             if ($appExists) {
                 Get-AppxPackage -Name $app -AllUsers | Remove-AppxPackage -ErrorAction Stop
-                Write-InfoLog "Successfully removed $app"
+                Write-VerboseLog "Successfully removed $app"
             } else {
                 Write-VerboseLog "$app not found, skipping..."
             }
