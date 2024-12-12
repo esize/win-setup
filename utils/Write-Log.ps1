@@ -27,24 +27,24 @@ function Write-Log {
     # Define log symbols and colors
     $LogStyles = @{
         'Information' = @{
-            Symbol = '→'
-            Color = 'Cyan'
-        }
+            'Symbol' = '→';
+            'Color' = 'Cyan'
+        };
         'Warning' = @{
-            Symbol = '⚠'
-            Color = 'Yellow'
-        }
+            'Symbol' = '⚠';
+            'Color' = 'Yellow'
+        };
         'Error' = @{
-            Symbol = '✗'
-            Color = 'Red'
-        }
+            'Symbol' = '✗';
+            'Color' = 'Red'
+        };
         'Success' = @{
-            Symbol = '✓'
-            Color = 'Green'
-        }
+            'Symbol' = '✓';
+            'Color' = 'Green'
+        };
         'Debug' = @{
-            Symbol = '🔧'
-            Color = 'Gray'
+            'Symbol' = '🔧';
+            'Color' = 'Gray'
         }
     }
     
@@ -65,5 +65,3 @@ function Write-Log {
         Write-Host $ConsoleLogEntry -ForegroundColor $LogStyles[$Level].Color
     }
 }
-
-Export-ModuleMember -Function Write-Log
