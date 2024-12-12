@@ -85,6 +85,7 @@ function Show-Menu {
 # Initial menu render
 Show-Menu -selectedIndex $currentOption -selectedItems $selected
 
+# Menu loop
 while ($true) {
     $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
     
@@ -104,10 +105,9 @@ while ($true) {
         13 { # Enter
             # Move cursor past menu
             $host.UI.RawUI.CursorPosition = New-Object System.Management.Automation.Host.Coordinates 0, ($host.UI.RawUI.CursorPosition.Y + $options.Count + 1)
-            break
+            return
         }
     }
-    if ($key.VirtualKeyCode -eq 13) { break }
 }
 
 # Build configuration from selections
