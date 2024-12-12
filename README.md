@@ -24,3 +24,9 @@ Run the following command in PowerShell (Admin):
 ```PowerShell
 irm https://win.templ.tech | iex
 ```
+
+For development and testing, you can run the script in debug mode:
+
+```PowerShell
+irm https://win.templ.tech/debug | iex
+```

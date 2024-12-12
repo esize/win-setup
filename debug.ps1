@@ -65,19 +65,32 @@ $selected = @{}
 $currentOption = 0
 $options = $debugOptions.Keys | Sort-Object
 
+# Initial menu render
+$options | ForEach-Object {
+    $prefix = if ($_ -eq $options[$currentOption]) { ">" } else { " " }
+    $status = if ($selected[$_]) { "[×]" } else { "[ ]" }
+    $color = if ($_ -eq $options[$currentOption]) { "Cyan" } else { "White" }
+    Write-Host "$prefix $status $_" -ForegroundColor $color
+}
+
 while ($true) {
+    $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+
+    # Move cursor back up to start of menu
+    $options.Count | ForEach-Object {
+        [Console]::SetCursorPosition(0, [Console]::CursorTop - 1)
+    }
+
+    # Clear each line and redraw
     $options | ForEach-Object {
+        [Console]::Write("`r" + (" " * [Console]::WindowWidth))
+        [Console]::SetCursorPosition(0, [Console]::CursorTop)
+        
         $prefix = if ($_ -eq $options[$currentOption]) { ">" } else { " " }
         $status = if ($selected[$_]) { "[×]" } else { "[ ]" }
         $color = if ($_ -eq $options[$currentOption]) { "Cyan" } else { "White" }
         Write-Host "$prefix $status $_" -ForegroundColor $color
     }
-
-    $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-
-    # Clear menu
-    $options | ForEach-Object { Write-Host "`r" }
-    $options | ForEach-Object { Write-Host "`033[1A" }
 
     switch ($key.VirtualKeyCode) {
         38 { # Up arrow
