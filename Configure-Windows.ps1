@@ -16,20 +16,10 @@ if (-not (Get-Module -ListAvailable -Name PoShLog)) {
 
 Import-Module PoShLog
 
-# Create custom theme
-$customTheme = @{
-    Debug = "#8AADF4"      # Blue
-    Information = "#A6DA95" # Green
-    Warning = "#EED49F"     # Yellow
-    Error = "#ED8796"       # Red
-    Fatal = "#F5BDE6"       # Purple
-    Verbose = "#8BD5CA"     # Cyan
-}
-
 New-Logger |
     Set-MinimumLevel -Value Debug |
     Add-SinkFile -Path "logs/script.log" -RestrictedToMinimumLevel Debug |
-    Add-SinkConsole -Theme $customTheme -OutputTemplate "[{Level:u3}] {Message}{NewLine}" |
+    Add-SinkConsole -OutputTemplate "[{Level:u3}] {Message}{NewLine}" |
     Start-Logger
 
 
