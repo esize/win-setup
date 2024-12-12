@@ -15,55 +15,40 @@ function Write-Log {
     # Create timestamp
     $Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
     
-    # Define colors and emojis for different log levels
+    # Define colors and prefixes for different log levels
     $LogConfig = @{
         'SUCCESS' = @{
             Color = 'Green'
-            Emoji = '✅'
-            Prefix = ' '
+            Prefix = '✓'
         }
         'INFO'  = @{
             Color = 'Cyan'
-            Emoji = '📝'
-            Prefix = '   '
+            Prefix = ''
         }
         'WARN'  = @{
             Color = 'Yellow'
-            Emoji = '⚠️'
-            Prefix = '  '
+            Prefix = '⚠'
         }
         'ERROR' = @{
             Color = 'Red'
-            Emoji = '❌'
-            Prefix = '  '
+            Prefix = '✗'
         }
         'DEBUG' = @{
-            Color = 'Gray'
-            Emoji = '🔍'
-            Prefix = '  '
+            Color = 'DarkGray'
+            Prefix = ''
         }
     }
 
-    # Create log entry for file (without emoji)
+    # Create log entry for file (with timestamp)
     $LogEntry = "[$Timestamp] [$Level] $Message"
     
-    # Write to console with enhanced formatting
-    Write-Host -NoNewline "`n$($LogConfig[$Level].Emoji) " # Emoji with space
-    Write-Host -NoNewline "[$Timestamp] " -ForegroundColor DarkGray
-    Write-Host -NoNewline "$($LogConfig[$Level].Prefix)[$Level] " -ForegroundColor $LogConfig[$Level].Color
+    # Create console output (without timestamp)
+    $ConsolePrefix = if ($LogConfig[$Level].Prefix) { "$($LogConfig[$Level].Prefix) " } else { "" }
+    $ConsoleMessage = "[$Level] $Message"
     
-    # Add horizontal line for ERROR level or checkmark line for SUCCESS
-    if ($Level -eq 'ERROR') {
-        $Message = "$Message`n$($LogConfig[$Level].Prefix)$('─' * 50)"
-    }
-    elseif ($Level -eq 'SUCCESS') {
-        $Message = "$Message`n$($LogConfig[$Level].Prefix)$('─' * 25)$('✓')$('─' * 24)"
-    }
-    
-    Write-Host $Message
-    
-    # Add extra line break after each log entry
-    Write-Host ""
+    # Write to console with color
+    Write-Host $ConsolePrefix -NoNewline -ForegroundColor $LogConfig[$Level].Color
+    Write-Host $ConsoleMessage
 
     # Ensure log directory exists
     $LogDir = Split-Path $LogFile -Parent
@@ -71,6 +56,6 @@ function Write-Log {
         New-Item -ItemType Directory -Path $LogDir -Force | Out-Null
     }
 
-    # Write to log file (clean format without emojis and extra formatting)
+    # Write to log file
     Add-Content -Path $LogFile -Value $LogEntry
 }
