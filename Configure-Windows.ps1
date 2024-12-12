@@ -2,7 +2,10 @@
 [CmdletBinding()]
 param(
     [Parameter()]
-    [switch]$SkipApps
+    [switch]$SkipApps,
+    
+    [Parameter()]
+    [switch]$SkipWSL
 )
 
 # Set script location as working directory
@@ -54,8 +57,12 @@ try {
     Set-TaskbarPinnedApps
 
     # Install WSL2 and Ubuntu
-    Write-Log "Installing WSL2 and Ubuntu..."
-    Install-WSL
+    if (-not $SkipWSL) {
+        Write-Log "Installing WSL2 and Ubuntu..."
+        Install-WSL
+    } else {
+        Write-Log "Skipping WSL installation..." -Level Information
+    }
 
     # Configure Start Menu preferences
     Write-Log "Configuring Start Menu preferences..."
