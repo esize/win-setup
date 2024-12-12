@@ -74,6 +74,6 @@ function Install-GeistMonoFont {
         Write-Host "`r  ✓ Cleaning up   " -ForegroundColor Green
     }
     
-    Write-Host "`n✔️ Font installation completed!" -ForegroundColor Green
+    Write-Host "`r  ✓ Font installation completed!" -ForegroundColor Green
     Restart-Explorer
 } 
