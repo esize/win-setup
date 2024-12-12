@@ -13,10 +13,20 @@ $scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $scriptPath
 
 # Import utility functions
-. "$scriptPath\utils\Write-Log.ps1"
-. "$scriptPath\utils\Check-AdminRights.ps1"
-. "$scriptPath\utils\Restart-Explorer.ps1"
-. "$scriptPath\utils\Write-ProgressBar.ps1"
+$utilsPath = Join-Path $scriptPath "utils"
+. (Join-Path $utilsPath "Write-Log.ps1")
+. (Join-Path $utilsPath "Check-AdminRights.ps1")
+. (Join-Path $utilsPath "Restart-Explorer.ps1")
+. (Join-Path $utilsPath "Write-ProgressBar.ps1")
+
+# Add this after setting $utilsPath
+Write-Host "Utils path: $utilsPath"
+Write-Host "Write-Log path: $(Join-Path $utilsPath 'Write-Log.ps1')"
+if (Test-Path (Join-Path $utilsPath 'Write-Log.ps1')) {
+    Write-Host "Write-Log.ps1 file exists"
+} else {
+    Write-Host "Write-Log.ps1 file not found"
+}
 
 # Check for debug configuration
 $debugConfigPath = "$env:USERPROFILE\win-setup-debug.json"
