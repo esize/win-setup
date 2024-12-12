@@ -45,7 +45,9 @@ $steps = @(
         $ProgressPreference = 'Continue'
     }}
     @{ Name = "Extracting files"; Action = {
+        $ProgressPreference = 'SilentlyContinue'
         Expand-Archive -Path "$setupDir\repo.zip" -DestinationPath $setupDir -Force
+        $ProgressPreference = 'Continue'
     }}
     @{ Name = "Preparing configuration"; Action = {
         $extractedDir = Get-ChildItem -Path $setupDir -Filter "win-setup-*" | Select-Object -First 1
