@@ -65,8 +65,8 @@ function Show-Menu {
         [hashtable]$selectedItems
     )
     
-    # Clear the console area for menu
-    $host.UI.RawUI.CursorPosition = New-Object System.Management.Automation.Host.Coordinates 0, $host.UI.RawUI.CursorPosition.Y
+    # Store current cursor position
+    $cursorTop = [System.Console]::CursorTop
     
     # Display all options
     for ($i = 0; $i -lt $options.Count; $i++) {
@@ -78,8 +78,8 @@ function Show-Menu {
         Write-Host "$prefix $status $option" -ForegroundColor $color
     }
     
-    # Move cursor back up
-    $host.UI.RawUI.CursorPosition = New-Object System.Management.Automation.Host.Coordinates 0, ($host.UI.RawUI.CursorPosition.Y - $options.Count)
+    # Reset cursor position
+    [System.Console]::SetCursorPosition(0, $cursorTop)
 }
 
 # Initial menu render
@@ -104,8 +104,9 @@ while ($menuActive) {
             Show-Menu -selectedIndex $currentOption -selectedItems $selected
         }
         13 { # Enter
-            # Move cursor past menu
-            $host.UI.RawUI.CursorPosition = New-Object System.Management.Automation.Host.Coordinates 0, ($host.UI.RawUI.CursorPosition.Y + $options.Count + 1)
+            # Move cursor to end of menu
+            [System.Console]::SetCursorPosition(0, [System.Console]::CursorTop + $options.Count)
+            Write-Host "" # Add a newline
             $menuActive = $false
         }
     }
