@@ -96,9 +96,23 @@ try {
     Write-Log "Configuring Windows Terminal..."
     Set-TerminalPreferences
 
-    Write-Log "Configuration completed successfully!"
+    # Wait for all processes to complete
+    Write-Log "Waiting for all changes to apply..."
+    Start-Sleep -Seconds 10
+
+    # Prompt for restart
+    Write-Log "Configuration complete! A restart is required to apply all changes."
+    $restart = Read-Host "Would you like to restart now? (y/n)"
+    
+    if ($restart -eq 'y' -or $restart -eq 'Y') {
+        Write-Log "Restarting computer in 10 seconds..."
+        Start-Sleep -Seconds 10
+        Restart-Computer -Force
+    } else {
+        Write-Log "Please restart your computer manually to apply all changes."
+    }
 }
 catch {
-    Write-Log "Error occurred: $_" -Level Error
+    Write-Log "An error occurred during configuration: $_" -Level Error
     exit 1
 } 
