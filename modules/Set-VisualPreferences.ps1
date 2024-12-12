@@ -46,62 +46,45 @@ function Set-VisualPreferences {
             # Save and apply theme
             $themeContent | Set-Content $currentThemePath -Force
             Set-ItemProperty -Path $themeRegistry -Name "CurrentTheme" -Value $currentThemePath
-            
+
+            # Apply theme using rundll32
+            Start-Process "rundll32.exe" -ArgumentList "uxtheme.dll,SetSystemVisualStyle `"$currentThemePath`" `"`" `"`" 0" -Wait -NoNewWindow
+
+            # Broadcast theme change
             $signature = @'
-[DllImport("uxtheme.dll", CharSet = CharSet.Unicode)]
-public static extern int SetSystemVisualStyle(string pszFilename, string pszColor, string pszSize, int dwReserved);
+[DllImport("user32.dll", SetLastError=true, CharSet=CharSet.Auto)]
+public static extern IntPtr SendMessageTimeout(
+    IntPtr hWnd, 
+    uint Msg, 
+    UIntPtr wParam, 
+    string lParam, 
+    uint fuFlags, 
+    uint uTimeout, 
+    out UIntPtr lpdwResult
+);
 '@
 
-            if (-not ("Win32.ThemeAPI" -as [type])) {
-                Add-Type -MemberDefinition $signature -Name ThemeAPI -Namespace Win32 -ErrorAction SilentlyContinue
+            if (-not ("Win32.RefreshAPI" -as [type])) {
+                Add-Type -MemberDefinition $signature -Name RefreshAPI -Namespace Win32 -ErrorAction SilentlyContinue
             }
 
-            try {
-                [Win32.ThemeAPI]::SetSystemVisualStyle($currentThemePath, $null, $null, 0)
-                
-                # Broadcast theme change
-                $refreshSignature = @'
-                [DllImport("user32.dll", SetLastError=true, CharSet=CharSet.Auto)]
-                public static extern IntPtr SendMessageTimeout(
-                    IntPtr hWnd, 
-                    uint Msg, 
-                    UIntPtr wParam, 
-                    string lParam, 
-                    uint fuFlags, 
-                    uint uTimeout, 
-                    out UIntPtr lpdwResult
-                );
-'@
+            [UIntPtr]$result = [UIntPtr]::Zero
+            [Win32.RefreshAPI]::SendMessageTimeout(
+                [IntPtr]0xFFFF,     # HWND_BROADCAST
+                0x001A,             # WM_SETTINGCHANGE
+                [UIntPtr]::Zero,
+                "ImmersiveColorSet",
+                2,                  # SMTO_ABORTIFHUNG
+                5000,               # 5 second timeout
+                [ref]$result
+            )
 
-                if (-not ("Win32.RefreshAPI" -as [type])) {
-                    Add-Type -MemberDefinition $refreshSignature -Name RefreshAPI -Namespace Win32 -ErrorAction SilentlyContinue
-                }
-
-                [UIntPtr]$result = [UIntPtr]::Zero
-                [Win32.RefreshAPI]::SendMessageTimeout(
-                    [IntPtr]0xFFFF,     # HWND_BROADCAST
-                    0x001A,             # WM_SETTINGCHANGE
-                    [UIntPtr]::Zero,
-                    "ImmersiveColorSet",
-                    2,                  # SMTO_ABORTIFHUNG
-                    5000,               # 5 second timeout
-                    [ref]$result
-                )
-            } catch {
-                Write-Log "Failed to apply theme using SetSystemVisualStyle: $_" -Level Warning
-                # Fallback to using the theme file directly
-                Start-Process $currentThemePath -Wait
-            }
-            
-            $themeFound = $true
+            Write-Log "Theme applied successfully"
         }
         catch {
             Write-Log "Failed to apply theme: $_" -Level Warning
-            $themeFound = $false
-        }
-        
-        if (-not $themeFound) {
-            Write-Log "Theme application failed - falling back to default theme" -Level Warning
+            # Fallback to opening Settings app
+            Start-Process "ms-settings:themes"
         }
     } else {
         Write-Log "Theme pack file not found at: $themePath" -Level Warning
