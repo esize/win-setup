@@ -39,11 +39,11 @@ function Remove-DefaultApps {
                 }
 
                 # Try to remove provisioned package first
-                Get-AppxProvisionedPackage -Online | Where-Object { $_.DisplayName -eq $app } | 
-                    Remove-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue
+                [void](Get-AppxProvisionedPackage -Online | Where-Object { $_.DisplayName -eq $app } | 
+                    Remove-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue)
 
                 # Remove the package for all users
-                Get-AppxPackage -Name $app -AllUsers | Remove-AppxPackage -AllUsers -ErrorAction Stop
+                Get-AppxPackage -Name $app -AllUsers | Remove-AppxPackage -AllUsers -ErrorAction Stop | Out-Null
                 Write-Log -Level DEBUG "Successfully removed $app"
             } else {
                 Write-Log -Level DEBUG "$app not found, skipping..."
