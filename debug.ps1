@@ -65,50 +65,54 @@ $selected = @{}
 $currentOption = 0
 $options = $debugOptions.Keys | Sort-Object
 
-# Initial menu render
-$options | ForEach-Object {
-    $prefix = if ($_ -eq $options[$currentOption]) { ">" } else { " " }
-    $status = if ($selected[$_]) { "[×]" } else { "[ ]" }
-    $color = if ($_ -eq $options[$currentOption]) { "Cyan" } else { "White" }
-    Write-Host "$prefix $status $_" -ForegroundColor $color
+function Show-Menu {
+    param (
+        [int]$selectedIndex,
+        [hashtable]$selectedItems
+    )
+    
+    # Clear the console area for menu
+    $host.UI.RawUI.CursorPosition = New-Object System.Management.Automation.Host.Coordinates 0, $host.UI.RawUI.CursorPosition.Y
+    
+    # Display all options
+    for ($i = 0; $i -lt $options.Count; $i++) {
+        $option = $options[$i]
+        $prefix = if ($i -eq $selectedIndex) { ">" } else { " " }
+        $status = if ($selectedItems[$option]) { "[×]" } else { "[ ]" }
+        $color = if ($i -eq $selectedIndex) { "Cyan" } else { "White" }
+        
+        Write-Host "$prefix $status $option" -ForegroundColor $color
+    }
+    
+    # Move cursor back up
+    $host.UI.RawUI.CursorPosition = New-Object System.Management.Automation.Host.Coordinates 0, ($host.UI.RawUI.CursorPosition.Y - $options.Count)
 }
+
+# Initial menu render
+Show-Menu -selectedIndex $currentOption -selectedItems $selected
 
 while ($true) {
     $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-
-    # Move cursor back up to start of menu
-    $options.Count | ForEach-Object {
-        [Console]::SetCursorPosition(0, [Console]::CursorTop - 1)
-    }
-
-    # Clear each line and redraw
-    $options | ForEach-Object {
-        [Console]::Write("`r" + (" " * [Console]::WindowWidth))
-        [Console]::SetCursorPosition(0, [Console]::CursorTop)
-        
-        $prefix = if ($_ -eq $options[$currentOption]) { ">" } else { " " }
-        $status = if ($selected[$_]) { "[×]" } else { "[ ]" }
-        $color = if ($_ -eq $options[$currentOption]) { "Cyan" } else { "White" }
-        Write-Host "$prefix $status $_" -ForegroundColor $color
-    }
-
+    
     switch ($key.VirtualKeyCode) {
         38 { # Up arrow
             $currentOption = if ($currentOption -eq 0) { $options.Count - 1 } else { $currentOption - 1 }
+            Show-Menu -selectedIndex $currentOption -selectedItems $selected
         }
         40 { # Down arrow
             $currentOption = if ($currentOption -eq $options.Count - 1) { 0 } else { $currentOption + 1 }
+            Show-Menu -selectedIndex $currentOption -selectedItems $selected
         }
         32 { # Space
             $selected[$options[$currentOption]] = -not $selected[$options[$currentOption]]
+            Show-Menu -selectedIndex $currentOption -selectedItems $selected
         }
         13 { # Enter
-            $done = $true
-            break
+            # Move cursor past menu before exiting
+            $host.UI.RawUI.CursorPosition = New-Object System.Management.Automation.Host.Coordinates 0, ($host.UI.RawUI.CursorPosition.Y + $options.Count)
+            return $selected
         }
     }
-
-    if ($done) { break }
 }
 
 # Build configuration from selections
