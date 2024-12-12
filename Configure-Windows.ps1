@@ -81,9 +81,13 @@ try {
     Write-Log "Configuring system tweaks..."
     Set-SystemTweaks
     
-    # Ensure PowerShell 7
-    Write-Log "Ensuring PowerShell 7..."
-    Install-PowerShell7
+    # Ensure PowerShell 7 (unless disabled)
+    if (-not ($debugConfig.system.skipPowerShell)) {
+        Write-Log "Ensuring PowerShell 7..."
+        Install-PowerShell7
+    } else {
+        Write-Log "Skipping PowerShell 7 installation (debug option)" -Level Information
+    }
 
     # Remove default apps
     Write-Log "Removing default Windows applications..."

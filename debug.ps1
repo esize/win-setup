@@ -49,6 +49,12 @@ $debugOptions = @{
         description = "Skip the restart prompt at the end"
         default = $false
     }
+    "Skip PowerShell Installation" = @{
+        key = "skipPowerShell"
+        category = "system"
+        description = "Skip installation of PowerShell 7"
+        default = $false
+    }
 }
 
 # Display menu
