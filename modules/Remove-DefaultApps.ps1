@@ -44,13 +44,13 @@ function Remove-DefaultApps {
 
                 # Remove the package for all users
                 Get-AppxPackage -Name $app -AllUsers | Remove-AppxPackage -AllUsers -ErrorAction Stop
-                Write-VerboseLog "Successfully removed $app"
+                Write-Log -Level DEBUG "Successfully removed $app"
             } else {
-                Write-VerboseLog "$app not found, skipping..."
+                Write-Log -Level DEBUG "$app not found, skipping..."
             }
         }
         catch {
-            Write-WarningLog "Failed to remove $app : $_"
+            Write-Log -Level WARN "Failed to remove $app : $_"
             
             # Additional cleanup attempt for Outlook
             if ($app -eq "Microsoft.OutlookForWindows") {
@@ -62,7 +62,7 @@ function Remove-DefaultApps {
                     }
                 }
                 catch {
-                    Write-WarningLog "Failed additional cleanup for Outlook: $_"
+                    Write-Log -Level WARN "Failed additional cleanup for Outlook: $_"
                 }
             }
         }

@@ -14,6 +14,5 @@ function Write-ProgressBar {
     $progressPercentage = [math]::Round(($Current / $Total) * 100)
     $progressBar = "[" + ("=" * [math]::Floor($progressPercentage / 2)) + (" " * (50 - [math]::Floor($progressPercentage / 2))) + "]"
     
-    # Use PoShLog for output
-    Write-InfoLog "$Message $progressBar [$Current/$Total] ($progressPercentage%)"
+    Write-Log "$Message $progressBar [$Current/$Total] ($progressPercentage%)" -Level INFO
 } 

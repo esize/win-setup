@@ -2,7 +2,7 @@ function Set-TerminalPreferences {
     [CmdletBinding()]
     param()
 
-    Write-InfoLog "Configuring Windows Terminal preferences..."
+    Write-Log -Level INFO "Configuring Windows Terminal preferences..."
 
     $terminalSettingsPath = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
     $terminalDefaultsPath = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\defaults.json"
@@ -112,10 +112,10 @@ function Set-TerminalPreferences {
 
         # Convert and save the settings
         $terminalSettings | ConvertTo-Json -Depth 10 | Set-Content $terminalSettingsPath -Force
-        Write-InfoLog "Windows Terminal settings configured successfully!"
+        Write-Log -Level INFO "Windows Terminal settings configured successfully!"
     }
     catch {
-        Write-ErrorLog "Failed to configure Windows Terminal: $_"
+        Write-Log -Level ERROR "Failed to configure Windows Terminal: $_"
         throw
     }
 } 

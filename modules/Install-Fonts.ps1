@@ -2,7 +2,6 @@ function Install-GeistMonoFont {
     [CmdletBinding()]
     param()
 
-    Write-InfoLog "Installing GeistMono Nerd Font..."
 
     try {
         # Define font URLs and paths
@@ -18,15 +17,15 @@ function Install-GeistMonoFont {
         }
 
         # Download font
-        Write-VerboseLog "Downloading GeistMono Nerd Font..."
+        Write-Log -Level DEBUG "Downloading GeistMono Nerd Font..."
         Invoke-WebRequest -Uri $fontUrl -OutFile $fontZip -UseBasicParsing
 
         # Extract fonts
-        Write-VerboseLog "Extracting fonts..."
+        Write-Log -Level DEBUG "Extracting fonts..."
         Expand-Archive -Path $fontZip -DestinationPath $fontsFolder -Force
 
         # Install fonts
-        Write-VerboseLog "Installing fonts..."
+        Write-Log -Level DEBUG "Installing fonts..."
         $fonts = Get-ChildItem -Path $fontsFolder -Include "*.ttf","*.otf" -Recurse
         foreach ($font in $fonts) {
             $destPath = Join-Path $systemFontsPath $font.Name
@@ -53,7 +52,7 @@ function Install-GeistMonoFont {
         }
 
         # Reload font cache
-        Write-VerboseLog "Reloading font cache..."
+        Write-Log -Level DEBUG "Reloading font cache..."
         $signature = @'
         [DllImport("gdi32.dll")]
         public static extern int AddFontResource(string lpFilename);
@@ -74,10 +73,10 @@ function Install-GeistMonoFont {
 '@
         [Win32]::SendMessage($HWND_BROADCAST, $WM_FONTCHANGE, [IntPtr]::Zero, [IntPtr]::Zero)
 
-        Write-InfoLog "GeistMono Nerd Font installed successfully!"
+        Write-Log -Level INFO "GeistMono Nerd Font installed successfully!"
     }
     catch {
-        Write-ErrorLog "Failed to install GeistMono Nerd Font: $_"
+        Write-Log -Level ERROR "Failed to install GeistMono Nerd Font: $_"
         throw
     }
     finally {

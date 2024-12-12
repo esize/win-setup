@@ -22,7 +22,7 @@ function Set-ShellPreferences {
             Set-ItemProperty -Path $Path -Name $Name -Value $Value -ErrorAction Stop
         }
         catch {
-            Write-WarningLog "Failed to set registry property $Name at $Path : $_"
+            Write-Log -Level WARN "Failed to set registry property $Name at $Path : $_"
         }
     }
 
@@ -33,7 +33,7 @@ function Set-ShellPreferences {
     Set-RegistryProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Value 0
 
     # Disable widgets
-    Write-VerboseLog "Disabling Taskbar Widgets..."
+    Write-Log -Level DEBUG "Disabling Taskbar Widgets..."
     $policies = @(
         @{
             Path = "HKLM:\SOFTWARE\Policies\Microsoft\Dsh"
@@ -59,7 +59,7 @@ function Set-TaskbarPinnedApps {
     [CmdletBinding()]
     param()
 
-    Write-VerboseLog "Configuring taskbar pinned apps..."
+    Write-Log -Level DEBUG "Configuring taskbar pinned apps..."
 
     # Define apps in desired order
     $pinnedApps = @(
@@ -124,9 +124,9 @@ foreach ($path in $paths) {
         # Cleanup
         Remove-Item $tempScript -Force -ErrorAction SilentlyContinue
 
-        Write-InfoLog "Taskbar apps configured successfully!"
+        Write-Log -Level INFO "Taskbar apps configured successfully!"
     }
     catch {
-        Write-WarningLog "Failed to configure taskbar apps: $_"
+        Write-Log -Level WARN "Failed to configure taskbar apps: $_"
     }
 }
