@@ -2,8 +2,17 @@ function Remove-DefaultApps {
     [CmdletBinding()]
     param()
 
+    # First handle Copilot separately using winget
+    try {
+        Write-Log -Level DEBUG "Attempting to remove Copilot using winget..."
+        winget uninstall Copilot --silent --accept-source-agreements | Out-Null
+        Write-Log -Level DEBUG "Successfully removed Copilot"
+    }
+    catch {
+        Write-Log -Level WARN "Failed to remove Copilot using winget: $_"
+    }
+
     $appsToRemove = @(
-        "Microsoft.Windows.Copilot",
         "Microsoft.WindowsFeedbackHub",
         "Microsoft.XboxGamingOverlay",
         "Microsoft.GetHelp",
@@ -32,30 +41,7 @@ function Remove-DefaultApps {
         try {
             $appExists = Get-AppxPackage -Name $app -AllUsers -ErrorAction SilentlyContinue
             if ($appExists) {
-                # Special handling for Copilot
-                if ($app -eq "Microsoft.Windows.Copilot") {
-                    # Create registry paths if they don't exist
-                    $regPaths = @(
-                        "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsCopilot",
-                        "HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot"
-                    )
-                    foreach ($path in $regPaths) {
-                        if (-not (Test-Path $path)) {
-                            New-Item -Path $path -Force | Out-Null
-                        }
-                    }
-
-                    # Set registry values to disable Copilot
-                    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsCopilot" -Name "TurnOffWindowsCopilot" -Type DWord -Value 1
-                    Set-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot" -Name "TurnOffWindowsCopilot" -Type DWord -Value 1
-                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowCopilotButton" -Type DWord -Value 0
-
-                    # Remove Copilot package
-                    DISM.exe /online /remove-package /packagename:Microsoft.Windows.Copilot
-                    Write-Log -Level DEBUG "Attempted to remove Copilot using DISM and registry modifications"
-                    continue
-                }
-
+                
                 # Stop related processes first
                 if ($app -eq "Microsoft.OutlookForWindows") {
                     Get-Process | Where-Object { $_.Name -like "*outlook*" } | Stop-Process -Force -ErrorAction SilentlyContinue
