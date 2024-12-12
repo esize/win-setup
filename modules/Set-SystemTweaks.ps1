@@ -86,33 +86,47 @@ function Set-SystemTweaks {
 
     # NumLock on Startup (with proper registry handling)
     if ($settings.system.enableNumLockOnStart) {
-        # Load the default user registry hive
-        $defaultUserPath = "HKU:\DEFAULT"
-        if (-not (Test-Path $defaultUserPath)) {
-            reg load "HKU\DEFAULT" "C:\Users\Default\NTUSER.DAT"
-        }
-
         try {
-            # Set for Default User
-            $path = "HKU:\DEFAULT\Control Panel\Keyboard"
-            Ensure-RegistryPath -Path $path
-            Set-ItemProperty -Path $path -Name "InitialKeyboardIndicators" -Value 2
-
             # Set for Current User
             $path = "HKCU:\Control Panel\Keyboard"
-            Ensure-RegistryPath -Path $path
-            Set-ItemProperty -Path $path -Name "InitialKeyboardIndicators" -Value 2
+            if (-not (Test-Path $path)) {
+                New-Item -Path $path -Force | Out-Null
+            }
+            Set-ItemProperty -Path $path -Name "InitialKeyboardIndicators" -Value "2"
+
+            # Set for Default User
+            $defaultUserPath = "C:\Users\Default\NTUSER.DAT"
+            if (Test-Path $defaultUserPath) {
+                # Load the default user registry hive
+                reg load "HKU\DefaultUser" $defaultUserPath | Out-Null
+
+                # Set the registry value
+                $defaultPath = "Registry::HKU\DefaultUser\Control Panel\Keyboard"
+                if (-not (Test-Path $defaultPath)) {
+                    New-Item -Path $defaultPath -Force | Out-Null
+                }
+                Set-ItemProperty -Path $defaultPath -Name "InitialKeyboardIndicators" -Value "2"
+
+                # Force garbage collection and unload the hive
+                [gc]::Collect()
+                reg unload "HKU\DefaultUser" | Out-Null
+            }
         }
-        finally {
-            # Unload the default user hive
-            [gc]::Collect()
-            reg unload "HKU\DEFAULT"
+        catch {
+            Write-Log "Failed to set NumLock settings: $_" -Level Warning
         }
     } else {
-        # Set for Default User
-        Set-ItemProperty -Path "HKU:\.DEFAULT\Control Panel\Keyboard" -Name "InitialKeyboardIndicators" -Value 0
-        # Set for Current User
-        Set-ItemProperty -Path "HKCU:\Control Panel\Keyboard" -Name "InitialKeyboardIndicators" -Value 0
+        try {
+            # Set for Current User only
+            $path = "HKCU:\Control Panel\Keyboard"
+            if (-not (Test-Path $path)) {
+                New-Item -Path $path -Force | Out-Null
+            }
+            Set-ItemProperty -Path $path -Name "InitialKeyboardIndicators" -Value "0"
+        }
+        catch {
+            Write-Log "Failed to set NumLock settings: $_" -Level Warning
+        }
     }
 
     # Mouse Acceleration
