@@ -5,7 +5,7 @@ function Write-Log {
         [string]$Message,
         
         [Parameter(Mandatory = $false)]
-        [ValidateSet('Information', 'Warning', 'Error', 'Debug')]
+        [ValidateSet('Information', 'Warning', 'Error', 'Success', 'Debug')]
         [string]$Level = 'Information',
         
         [Parameter(Mandatory = $false)]
@@ -21,23 +21,40 @@ function Write-Log {
         New-Item -ItemType Directory -Path $LogDir -Force | Out-Null
     }
 
-    # Get current timestamp
+    # Get current timestamp (for file logging only)
     $Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
     
-    # Define log colors for console output
-    $LogColors = @{
-        'Information' = 'White'
-        'Warning' = 'Yellow'
-        'Error' = 'Red'
-        'Debug' = 'Cyan'
+    # Define log symbols and colors
+    $LogStyles = @{
+        'Information' = @{
+            Symbol = '→'
+            Color = 'Cyan'
+        }
+        'Warning' = @{
+            Symbol = '⚠'
+            Color = 'Yellow'
+        }
+        'Error' = @{
+            Symbol = '✗'
+            Color = 'Red'
+        }
+        'Success' = @{
+            Symbol = '✓'
+            Color = 'Green'
+        }
+        'Debug' = @{
+            Symbol = '🔧'
+            Color = 'Gray'
+        }
     }
     
-    # Create the log entry
-    $LogEntry = "[$Timestamp] [$Level] $Message"
+    # Create the log entries
+    $FileLogEntry = "[$Timestamp] [$Level] $Message"
+    $ConsoleLogEntry = "  $($LogStyles[$Level].Symbol) $Message"
     
     # Write to log file
     try {
-        Add-Content -Path $LogFilePath -Value $LogEntry -ErrorAction Stop
+        Add-Content -Path $LogFilePath -Value $FileLogEntry -ErrorAction Stop
     }
     catch {
         Write-Error "Failed to write to log file: $_"
@@ -45,6 +62,6 @@ function Write-Log {
     
     # Write to console if not suppressed
     if (-not $NoConsole) {
-        Write-Host $LogEntry -ForegroundColor $LogColors[$Level]
+        Write-Host $ConsoleLogEntry -ForegroundColor $LogStyles[$Level].Color
     }
 }

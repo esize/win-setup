@@ -15,13 +15,13 @@ function Write-ProgressBar {
     $progressBar = "[" + ("=" * [math]::Floor($progressPercentage / 2)) + (" " * (50 - [math]::Floor($progressPercentage / 2))) + "]"
     
     # Clear the previous line
-    Write-Host "`r" -NoNewline
+    Write-Log -Message "`r" -NoConsole:$false
     
     # Display current progress
-    Write-Host "`r$Message $progressBar [$Current/$Total] ($progressPercentage%)" -NoNewline
+    Write-Log -Message "`r$Message $progressBar [$Current/$Total] ($progressPercentage%)" -NoConsole:$false
     
     # Add newline if complete
     if ($Current -eq $Total) {
-        Write-Host ""
+        Write-Log "" -NoConsole:$false
     }
 } 

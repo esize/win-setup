@@ -35,5 +35,5 @@ function Install-Applications {
         Install-Application -appId $app.id
     }
     
-    Write-Host "`nAll applications installed!"
+    Write-Log "All applications installed!" -Level Success
 } 

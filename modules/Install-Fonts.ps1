@@ -2,7 +2,7 @@ function Install-GeistMonoFont {
     [CmdletBinding()]
     param()
 
-    Write-Host "`n🔤 Installing GeistMono Nerd Font..." -ForegroundColor Cyan
+    Write-Log "🔤 Installing GeistMono Nerd Font..." -Level Information
     
     $fontUrl = "https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/GeistMono.zip"
     $tempPath = "$env:TEMP\GeistMono"
@@ -54,26 +54,26 @@ function Install-GeistMonoFont {
     )
 
     foreach ($step in $steps) {
-        Write-Host "  → $($step.Name)..." -NoNewline
+        Write-Log "  → $($step.Name)..." -Level Information
         
         try {
             & $step.Action
-            Write-Host "`r  ✓ $($step.Name)   " -ForegroundColor Green
+            Write-Log "  ✓ $($step.Name)" -Level Success
         }
         catch {
-            Write-Host "`r  ✗ $($step.Name)   " -ForegroundColor Red
-            Write-Host "    Error: $_" -ForegroundColor Red
+            Write-Log "  ✗ $($step.Name)" -Level Error
+            Write-Log "    Error: $_" -Level Error
             throw
         }
     }
 
     # Cleanup
-    Write-Host "`n  → Cleaning up..." -NoNewline
+    Write-Log "  → Cleaning up..." -Level Information
     if (Test-Path $tempPath) {
         Remove-Item -Path $tempPath -Recurse -Force
-        Write-Host "`r  ✓ Cleaning up   " -ForegroundColor Green
+        Write-Log "  ✓ Cleaning up" -Level Success
     }
     
-    Write-Host "`r  ✓ Font installation completed!" -ForegroundColor Green
+    Write-Log "Font installation completed!" -Level Success
     Restart-Explorer
 } 

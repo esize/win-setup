@@ -17,7 +17,7 @@ $debugConfigPath = "$env:USERPROFILE\win-setup-debug.json"
 $debugConfig = $null
 if (Test-Path $debugConfigPath) {
     $debugConfig = Get-Content $debugConfigPath | ConvertFrom-Json
-    Write-Host "Debug configuration found!" -ForegroundColor Yellow
+    Write-Log "Debug configuration found!" -Level Warning
 }
 
 # Import utility functions
