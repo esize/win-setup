@@ -32,6 +32,13 @@ function Remove-DefaultApps {
         try {
             $appExists = Get-AppxPackage -Name $app -AllUsers -ErrorAction SilentlyContinue
             if ($appExists) {
+                # Special handling for Copilot
+                if ($app -eq "Microsoft.Windows.Copilot") {
+                    DISM.exe /online /remove-package /packagename:Microsoft.Windows.Copilot
+                    Write-Log -Level DEBUG "Attempted to remove Copilot using DISM"
+                    continue
+                }
+
                 # Stop related processes first
                 if ($app -eq "Microsoft.OutlookForWindows") {
                     Get-Process | Where-Object { $_.Name -like "*outlook*" } | Stop-Process -Force -ErrorAction SilentlyContinue
