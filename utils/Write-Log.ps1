@@ -39,16 +39,15 @@ function Write-Log {
         }
     }
 
-    # Create log entry for file (with timestamp)
+    # Create log entry for file (with timestamp and level)
     $LogEntry = "[$Timestamp] [$Level] $Message"
     
-    # Create console output (without timestamp)
+    # Create console output (just prefix and message)
     $ConsolePrefix = if ($LogConfig[$Level].Prefix) { "$($LogConfig[$Level].Prefix) " } else { "" }
-    $ConsoleMessage = "[$Level] $Message"
     
     # Write to console with color
     Write-Host $ConsolePrefix -NoNewline -ForegroundColor $LogConfig[$Level].Color
-    Write-Host $ConsoleMessage
+    Write-Host $Message -ForegroundColor $LogConfig[$Level].Color
 
     # Ensure log directory exists
     $LogDir = Split-Path $LogFile -Parent
