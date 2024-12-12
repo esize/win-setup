@@ -40,9 +40,9 @@ $steps = @(
     @{ Name = "Downloading setup files"; Action = {
         $zipUrl = "https://github.com/$repo/archive/refs/heads/$branch.zip"
         $zipFile = "$setupDir\repo.zip"
-        $ProgressPreference = 'SilentlyContinue'
+        $global:ProgressPreference = 'SilentlyContinue'
         $null = Invoke-WebRequest -Uri $zipUrl -OutFile $zipFile -UseBasicParsing
-        $ProgressPreference = 'Continue'
+
     }}
     @{ Name = "Extracting files"; Action = {
         $ProgressPreference = 'SilentlyContinue'
