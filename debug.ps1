@@ -112,7 +112,7 @@ while ($true) {
 }
 
 # Build configuration from selections
-$selected.Keys | Where-Object { $selected[$_] } | ForEach-Object {
+$selected.Keys | ForEach-Object {
     $option = $debugOptions[$_]
     $debugConfig[$option.category][$option.key] = $true
 }
