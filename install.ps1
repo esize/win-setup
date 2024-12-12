@@ -14,6 +14,21 @@ if ($currentPolicy -ne "RemoteSigned" -and $currentPolicy -ne "Unrestricted") {
 
 Write-Host "`n📦 Setting up Windows configuration..." -ForegroundColor Cyan
 
+# Check for debug configuration
+$debugConfigPath = "$env:USERPROFILE\win-setup-debug.json"
+$debugMode = $false
+
+if (Test-Path $debugConfigPath) {
+    try {
+        $debugConfig = Get-Content $debugConfigPath | ConvertFrom-Json
+        $debugMode = $true
+        Write-Host "🔧 Debug configuration found!" -ForegroundColor Yellow
+    }
+    catch {
+        Write-Host "⚠️ Invalid debug configuration file, proceeding with normal installation" -ForegroundColor Yellow
+    }
+}
+
 # Initialize variables
 $repo = "esize/win-setup"
 $branch = "main"
@@ -32,6 +47,16 @@ $steps = @(
     }}
     @{ Name = "Preparing configuration"; Action = {
         $extractedDir = Get-ChildItem -Path $setupDir -Filter "win-setup-*" | Select-Object -First 1
+        
+        # If debug mode is enabled, copy debug configuration
+        if ($debugMode) {
+            $configDir = Join-Path $extractedDir.FullName "config"
+            if (-not (Test-Path $configDir)) {
+                New-Item -ItemType Directory -Force -Path $configDir | Out-Null
+            }
+            Copy-Item -Path $debugConfigPath -Destination (Join-Path $configDir "debug.json") -Force
+        }
+        
         Set-Location $extractedDir.FullName
     }}
 )
