@@ -28,6 +28,18 @@ Invoke-WebRequest -Uri $zipUrl -OutFile $zipFile
 Expand-Archive -Path $zipFile -DestinationPath $setupDir -Force
 $extractedDir = Get-ChildItem -Path $setupDir -Filter "win-setup-*" | Select-Object -First 1
 
+# Create debug configuration
+$debugConfig = @{
+    system = @{
+        disableWSL = $true
+        skipApplications = $true
+    }
+}
+
+# Save debug configuration
+$debugConfigPath = Join-Path $extractedDir.FullName "config\debug.json"
+$debugConfig | ConvertTo-Json | Set-Content $debugConfigPath
+
 # Run configuration script
 Set-Location $extractedDir.FullName
 .\Configure-Windows.ps1
@@ -35,4 +47,4 @@ Set-Location $extractedDir.FullName
 # Cleanup
 Start-Sleep -Seconds 2  # Give processes time to release handles
 Set-Location $env:USERPROFILE
-Remove-Item -Path $setupDir -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item -Path $setupDir -Recurse -Force -ErrorAction SilentlyContinue 

@@ -56,12 +56,20 @@ try {
     Write-Log "Configuring taskbar pinned apps..."
     Set-TaskbarPinnedApps
 
+    # Check for debug configuration
+    $debugConfigPath = "$scriptPath\config\debug.json"
+    $debugMode = $false
+    if (Test-Path $debugConfigPath) {
+        $debugConfig = Get-Content $debugConfigPath | ConvertFrom-Json
+        $debugMode = $true
+    }
+
     # Install WSL2 and Ubuntu
-    if (-not $SkipWSL) {
+    if (-not ($debugMode -and $debugConfig.system.disableWSL)) {
         Write-Log "Installing WSL2 and Ubuntu..."
         Install-WSL
     } else {
-        Write-Log "Skipping WSL installation..." -Level Information
+        Write-Log "Debug mode: Skipping WSL installation..." -Level Information
     }
 
     # Configure Start Menu preferences
@@ -81,11 +89,11 @@ try {
     Remove-DefaultApps
 
     # Install applications
-    if (-not $SkipApps) {
+    if (-not ($debugMode -and $debugConfig.system.skipApplications)) {
         Write-Log "Installing applications..."
         Install-Applications
     } else {
-        Write-Log "Skipping application installation..." -Level Information
+        Write-Log "Debug mode: Skipping application installation..." -Level Information
     }
 
     # Install GeistMono Nerd Font
