@@ -34,8 +34,25 @@ function Remove-DefaultApps {
             if ($appExists) {
                 # Special handling for Copilot
                 if ($app -eq "Microsoft.Windows.Copilot") {
+                    # Create registry paths if they don't exist
+                    $regPaths = @(
+                        "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsCopilot",
+                        "HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot"
+                    )
+                    foreach ($path in $regPaths) {
+                        if (-not (Test-Path $path)) {
+                            New-Item -Path $path -Force | Out-Null
+                        }
+                    }
+
+                    # Set registry values to disable Copilot
+                    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsCopilot" -Name "TurnOffWindowsCopilot" -Type DWord -Value 1
+                    Set-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot" -Name "TurnOffWindowsCopilot" -Type DWord -Value 1
+                    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowCopilotButton" -Type DWord -Value 0
+
+                    # Remove Copilot package
                     DISM.exe /online /remove-package /packagename:Microsoft.Windows.Copilot
-                    Write-Log -Level DEBUG "Attempted to remove Copilot using DISM"
+                    Write-Log -Level DEBUG "Attempted to remove Copilot using DISM and registry modifications"
                     continue
                 }
 
