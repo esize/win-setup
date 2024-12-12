@@ -141,4 +141,3 @@ Write-Host "irm https://win.templ.tech | iex`n" -ForegroundColor White
 # Cleanup
 Start-Sleep -Seconds 2  # Give processes time to release handles
 Set-Location $env:USERPROFILE
-Remove-Item -Path $setupDir -Recurse -Force -ErrorAction SilentlyContinue 
