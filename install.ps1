@@ -29,7 +29,9 @@ Expand-Archive -Path $zipFile -DestinationPath $setupDir -Force
 $extractedDir = Get-ChildItem -Path $setupDir -Filter "win-setup-*" | Select-Object -First 1
 
 # Get command line arguments for passing through to Configure-Windows.ps1
-$scriptArgs = $args -join ' '
+$scriptArgs = $MyInvocation.BoundParameters.Keys | ForEach-Object {
+    "-$_ `"$($MyInvocation.BoundParameters[$_])`""
+}
 
 # Run configuration script
 Set-Location $extractedDir.FullName
