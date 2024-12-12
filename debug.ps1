@@ -51,12 +51,6 @@ $debugOptions = @{
     }
 }
 
-# Initialize debug configuration
-$debugConfig = @{
-    system = @{}
-    debug = @{}
-}
-
 # Display menu
 Write-Host "`n🔧 Windows Setup Debug Configuration`n" -ForegroundColor Cyan
 Write-Host "Select debug options (space to toggle, enter when done):`n"
@@ -108,14 +102,20 @@ while ($true) {
             Show-Menu -selectedIndex $currentOption -selectedItems $selected
         }
         13 { # Enter
-            # Move cursor past menu before exiting
-            $host.UI.RawUI.CursorPosition = New-Object System.Management.Automation.Host.Coordinates 0, ($host.UI.RawUI.CursorPosition.Y + $options.Count)
-            return $selected
+            # Move cursor past menu
+            $host.UI.RawUI.CursorPosition = New-Object System.Management.Automation.Host.Coordinates 0, ($host.UI.RawUI.CursorPosition.Y + $options.Count + 1)
+            break
         }
     }
+    if ($key.VirtualKeyCode -eq 13) { break }
 }
 
 # Build configuration from selections
+$debugConfig = @{
+    system = @{}
+    debug = @{}
+}
+
 $selected.Keys | ForEach-Object {
     $option = $debugOptions[$_]
     if ($option) {
