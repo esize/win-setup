@@ -77,12 +77,10 @@ function Install-GeistMonoFont {
     Write-Host "`n✓ Font installation completed!" -ForegroundColor Green
 
     # Broadcast font change notification
-    $signature = @'
-    [DllImport("gdi32.dll")]
-    public static extern int AddFontResource(string lpFilename);
-    [DllImport("user32.dll")]
-    public static extern int SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
-'@
+    $signature = @"
+[DllImport("user32.dll")]
+public static extern int SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+"@
     Add-Type -MemberDefinition $signature -Name WinAPI -Namespace Win32
     [Win32.WinAPI]::SendMessage(-1, 0x001D, 0, 0) | Out-Null
 } 
